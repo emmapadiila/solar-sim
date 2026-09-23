@@ -141,7 +141,8 @@ ALTER TABLE `tbl_simulacion`
 --
 ALTER TABLE `tbl_usuarios`
   ADD PRIMARY KEY (`id_usuario`),
-  ADD UNIQUE KEY `id_usuario` (`id_usuario`);
+  ADD UNIQUE KEY `id_usuario` (`id_usuario`),
+  ADD UNIQUE KEY `nombre_unico` (`nombre`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas

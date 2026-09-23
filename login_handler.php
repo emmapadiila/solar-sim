@@ -3,25 +3,29 @@ session_start();
 require_once 'conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nombre = $_POST['nombre'];
-    $contrasena = $_POST['password'];
-    
+    $nombre = trim($_POST['nombre'] ?? '');
+    $contrasena = trim($_POST['password'] ?? '');
+
     try {
-        $stmt = $conn->prepare("SELECT * FROM tbl_usuarios WHERE nombre = ?");
+        $stmt = $conn->prepare("SELECT id_usuario, nombre, contrasena, direccion, edad, rol FROM tbl_usuarios WHERE nombre = ? LIMIT 1");
         $stmt->bind_param("s", $nombre);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         if ($result->num_rows === 1) {
             $usuario = $result->fetch_assoc();
-            if ($contrasena === $usuario['contrasena']) { // En producción usar password_verify()
+            if ($contrasena === $usuario['contrasena']) {
                 $_SESSION['usuario'] = [
-                    'id' => $usuario['id_usuario'],
+                    'id' => (int)$usuario['id_usuario'],
+                    'id_usuario' => (int)$usuario['id_usuario'],
                     'nombre' => $usuario['nombre'],
-                    'rol' => $usuario['rol']
+                    'direccion' => $usuario['direccion'],
+                    'edad' => (int)$usuario['edad'],
+                    'rol' => strtolower(trim($usuario['rol']))
                 ];
-                
-                echo json_encode(['success' => true, 'rol' => $usuario['rol']]);
+                $_SESSION['id_usuario'] = (int)$usuario['id_usuario'];
+
+                echo json_encode(['success' => true, 'rol' => $_SESSION['usuario']['rol'], 'usuario' => $_SESSION['usuario']]);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Contraseña incorrecta']);
             }
