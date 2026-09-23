@@ -282,26 +282,38 @@ header {
 
 .form-group i {
     position: absolute;
-    left: var(--space-lg);
+    left: 18px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--primary-color);
-    font-size: var(--font-size-lg);
+    font-size: 1.15rem;
+    width: 20px;
+    text-align: center;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .form-group input {
     width: 100%;
-    padding: var(--space-md) var(--space-lg) var(--space-md) 50px;
-    border: 2px solid #ddd;
-    border-radius: var(--border-radius-xl);
-    font-size: var(--font-size-md);
+    padding: 1rem 1rem 1rem 3.1rem;
+    border: 2px solid #dfe3ea;
+    border-radius: 18px;
+    font-size: 1.05rem;
+    line-height: 1.4;
     transition: var(--transition-normal);
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.88);
+    color: #1f2937;
+    box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+    color: #6b7280;
+    opacity: 1;
 }
 
 .form-group input:focus {
     border-color: var(--accent-color);
-    box-shadow: 0 0 0 4px rgba(247, 37, 133, 0.2);
+    box-shadow: 0 0 0 4px rgba(247, 37, 133, 0.15);
     outline: none;
     background-color: var(--light-color);
 }
@@ -330,28 +342,31 @@ header {
     background: linear-gradient(to right, var(--primary-color), var(--accent-color));
     color: white;
     border: none;
-    padding: var(--space-md);
-    border-radius: var(--border-radius-xl);
-    font-size: var(--font-size-md);
+    padding: 0.95rem 1.15rem;
+    border-radius: 18px;
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: var(--transition-bounce);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
     margin-bottom: var(--space-lg);
     position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+    box-shadow: 0 8px 18px rgba(67, 97, 238, 0.25);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.04em;
+    min-height: 52px;
 }
 
 .auth-btn:hover {
     background: linear-gradient(to right, var(--accent-color), var(--primary-color));
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(247, 37, 133, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(247, 37, 133, 0.26);
+    filter: brightness(1.02);
 }
 
 .auth-btn:active {
-    transform: translateY(1px);
+    transform: translateY(0);
+    box-shadow: 0 6px 16px rgba(67, 97, 238, 0.2);
 }
 
 .auth-toggle {
