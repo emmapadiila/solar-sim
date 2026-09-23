@@ -275,12 +275,14 @@ header {
     font-size: var(--font-size-xl);
 }
 
-.form-group {
+#loginForm .form-group,
+#registerForm .form-group {
     position: relative;
     margin-bottom: var(--space-lg);
 }
 
-.form-group i {
+#loginForm .form-group i,
+#registerForm .form-group i {
     position: absolute;
     left: 18px;
     top: 50%;
@@ -289,11 +291,13 @@ header {
     font-size: 1.15rem;
     width: 20px;
     text-align: center;
-    z-index: 1;
+    z-index: 2;
     pointer-events: none;
+    line-height: 1;
 }
 
-.form-group input {
+#loginForm .form-group input,
+#registerForm .form-group input {
     width: 100%;
     padding: 1rem 1rem 1rem 3.1rem;
     border: 2px solid #dfe3ea;
@@ -304,14 +308,17 @@ header {
     background-color: rgba(255, 255, 255, 0.88);
     color: #1f2937;
     box-sizing: border-box;
+    display: block;
 }
 
-.form-group input::placeholder {
+#loginForm .form-group input::placeholder,
+#registerForm .form-group input::placeholder {
     color: #6b7280;
     opacity: 1;
 }
 
-.form-group input:focus {
+#loginForm .form-group input:focus,
+#registerForm .form-group input:focus {
     border-color: var(--accent-color);
     box-shadow: 0 0 0 4px rgba(247, 37, 133, 0.15);
     outline: none;
