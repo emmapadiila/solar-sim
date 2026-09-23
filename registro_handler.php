@@ -1,12 +1,14 @@
 <?php
 header('Content-Type: application/json');
+session_start();
+ob_clean();
 
 $response = ['success' => false];
 
 $raw_data = file_get_contents('php://input');
 $data = json_decode($raw_data, true);
 
-if (!$data) {
+if (!is_array($data)) {
     $response['message'] = "No se recibieron datos o el formato es incorrecto";
     echo json_encode($response);
     exit;
@@ -27,6 +29,13 @@ if (!is_numeric($data['edad']) || (int)$data['edad'] < 1) {
     exit;
 }
 
+$contrasena = trim((string)$data['contrasena']);
+if (strlen($contrasena) < 6) {
+    $response['message'] = "La contraseña debe tener al menos 6 caracteres";
+    echo json_encode($response);
+    exit;
+}
+
 try {
     $host = "localhost";
     $dbname = "paneles_solares";
@@ -37,12 +46,11 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     $nombre = trim((string)$data['nombre']);
-    $contrasena = trim((string)$data['contrasena']);
     $direccion = trim((string)$data['direccion']);
     $edad = (int)$data['edad'];
     $rol = 'usuario';
 
-    $stmt = $conn->prepare("SELECT 1 FROM tbl_usuarios WHERE nombre = :nombre LIMIT 1");
+    $stmt = $conn->prepare("SELECT 1 FROM tbl_usuarios WHERE LOWER(nombre) = LOWER(:nombre) LIMIT 1");
     $stmt->execute(['nombre' => $nombre]);
 
     if ($stmt->fetch()) {
@@ -51,10 +59,12 @@ try {
         exit;
     }
 
+    $hashedPassword = password_hash($contrasena, PASSWORD_DEFAULT);
+
     $stmt = $conn->prepare("INSERT INTO tbl_usuarios (nombre, contrasena, direccion, edad, rol) VALUES (:nombre, :contrasena, :direccion, :edad, :rol)");
     $stmt->execute([
         ':nombre' => $nombre,
-        ':contrasena' => $contrasena,
+        ':contrasena' => $hashedPassword,
         ':direccion' => $direccion,
         ':edad' => $edad,
         ':rol' => $rol
