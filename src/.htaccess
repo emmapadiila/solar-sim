@@ -1,0 +1,2 @@
+# Carpeta interna: nunca debe servirse por web.
+Require all denied

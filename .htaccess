@@ -1,0 +1,8 @@
+# Solo public/ es accesible desde el navegador.
+# Con mod_rewrite (activo por defecto en XAMPP) las URLs quedan sin "/public":
+#   http://localhost/solar-sim/dashboard.php  ->  public/dashboard.php
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^$ public/ [L]
+    RewriteRule ^((?!public/).*)$ public/$1 [L]
+</IfModule>

@@ -1,0 +1,8 @@
+# Configuración local con credenciales
+config/config.local.php
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
