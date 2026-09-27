@@ -57,7 +57,7 @@ render('layout/header', ['titulo' => 'Aprende', 'paginaActiva' => 'educativo']);
 
             <div class="grid grid--3">
                 <?php foreach ($temas as $tema): ?>
-                    <article class="card topic-card reveal">
+                    <article class="card topic-card">
                         <span class="icon-badge"><i class="fas <?= e($tema['icono']) ?>"></i></span>
                         <h3><?= e($tema['titulo']) ?></h3>
                         <p><?= e($tema['texto']) ?></p>
@@ -73,19 +73,19 @@ render('layout/header', ['titulo' => 'Aprende', 'paginaActiva' => 'educativo']);
             <section class="section">
                 <h2 class="section-title">Recursos adicionales</h2>
                 <div class="grid grid--3">
-                    <article class="card resource-card reveal">
+                    <article class="card resource-card">
                         <span class="icon-badge icon-badge--navy"><i class="fas fa-circle-play"></i></span>
                         <h3>Video explicativo</h3>
                         <p class="card__text">Cómo funciona la energía solar, explicado de forma visual.</p>
                         <a href="https://youtu.be/jeT5lZ9t7c0" class="btn btn--secondary btn--sm" target="_blank" rel="noopener">Ver video <i class="fas fa-arrow-up-right-from-square"></i></a>
                     </article>
-                    <article class="card resource-card reveal">
+                    <article class="card resource-card">
                         <span class="icon-badge icon-badge--navy"><i class="fas fa-book-open"></i></span>
                         <h3>Guía sobre paneles solares</h3>
                         <p class="card__text">Instalación, mantenimiento y lo que debes saber antes de invertir.</p>
                         <a href="https://nalelectricos.com.co/paneles-solares-lo-que-debes-saber/" class="btn btn--secondary btn--sm" target="_blank" rel="noopener">Leer guía <i class="fas fa-arrow-up-right-from-square"></i></a>
                     </article>
-                    <article class="card resource-card reveal">
+                    <article class="card resource-card">
                         <span class="icon-badge icon-badge--navy"><i class="fas fa-calculator"></i></span>
                         <h3>Calcula tu potencial solar</h3>
                         <p class="card__text">Aplica lo aprendido y estima el ahorro de tu propia vivienda.</p>

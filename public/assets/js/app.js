@@ -55,6 +55,45 @@ const SolarSim = {
         Swal.fire({ title: titulo, text: texto, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
     },
 
+    /** true si la persona pidió al sistema reducir el movimiento. */
+    sinMovimiento: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+
+    /**
+     * Cuenta desde 0 hasta el número que ya muestra el elemento ("$228.867", "4,0", "420").
+     * Solo anima el primer texto con dígitos, así la unidad (<span>) se conserva.
+     */
+    animarNumero(el, duracion = 900) {
+        if (SolarSim.sinMovimiento || el.dataset.animando) return;
+        const nodo = [...el.childNodes].find(n => n.nodeType === Node.TEXT_NODE && /\d/.test(n.nodeValue));
+        if (!nodo) return;
+
+        const original = nodo.nodeValue;
+        const m = original.trim().match(/^(\$?)(\d{1,3}(?:\.\d{3})*|\d+)(?:,(\d+))?$/);
+        if (!m) return;
+
+        const [, prefijo, entero, fraccion = ''] = m;
+        const valor = parseFloat(entero.replace(/\./g, '') + (fraccion ? '.' + fraccion : ''));
+        if (!valor) return;
+
+        el.dataset.animando = '1';
+        const inicio = performance.now();
+        const paso = ahora => {
+            const t = Math.min(1, (ahora - inicio) / duracion);
+            const suavizado = 1 - Math.pow(1 - t, 3);
+            nodo.nodeValue = t < 1 ? prefijo + SolarSim.numero(valor * suavizado, fraccion.length) : original;
+            if (t < 1) {
+                requestAnimationFrame(paso);
+            } else {
+                delete el.dataset.animando;
+            }
+        };
+        requestAnimationFrame(paso);
+    },
+
+    animarNumeros(contenedor) {
+        contenedor.querySelectorAll('.stat__value, .highlight__value').forEach(el => SolarSim.animarNumero(el));
+    },
+
     async cerrarSesion() {
         const confirmacion = await Swal.fire({
             title: '¿Cerrar sesión?',
@@ -81,6 +120,43 @@ const SolarSim = {
         }
     }
 };
+
+/**
+ * Apariciones al entrar en pantalla: tarjetas e indicadores suben y se desvanecen en cascada,
+ * y los números cuentan desde 0 la primera vez que se ven.
+ */
+function activarApariciones() {
+    // head.php solo añade la clase si hay IntersectionObserver y no se pidió reducir el movimiento
+    if (!document.documentElement.classList.contains('con-apariciones')) return;
+
+    const elementos = document.querySelectorAll('.page .card, .page .stat, .page .disclosure, .page .alert');
+
+    const observer = new IntersectionObserver(entries => {
+        const visibles = entries.filter(e => e.isIntersecting);
+        visibles.forEach((entry, i) => {
+            const el = entry.target;
+            el.style.setProperty('--reveal-delay', `${Math.min(i * 70, 420)}ms`);
+            el.classList.add('is-visible');
+            SolarSim.animarNumeros(el);
+            observer.unobserve(el);
+
+            // Al terminar se quitan las clases para que las transiciones de hover no hereden el retraso
+            el.addEventListener('transitionend', function limpiar(ev) {
+                if (ev.target !== el) return;
+                el.classList.add('revelado');
+                el.classList.remove('is-visible');
+                el.style.removeProperty('--reveal-delay');
+                el.removeEventListener('transitionend', limpiar);
+            });
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+
+    elementos.forEach(el => observer.observe(el));
+}
+
+// app.js se carga al final del <body>: el contenido ya existe, así que las apariciones arrancan
+// de inmediato en lugar de esperar a DOMContentLoaded.
+activarApariciones();
 
 document.addEventListener('DOMContentLoaded', function() {
     // Menú hamburguesa (pantallas medianas y móviles)

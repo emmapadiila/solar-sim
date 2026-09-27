@@ -11,12 +11,14 @@ define('TEMPLATES_PATH', ROOT_PATH . '/templates');
 $GLOBALS['config'] = require ROOT_PATH . '/config/config.php';
 
 ini_set('display_errors', $GLOBALS['config']['app']['debug'] ? '1' : '0');
+date_default_timezone_set($GLOBALS['config']['app']['zona_horaria']);
 error_reporting(E_ALL);
 
 require SRC_PATH . '/helpers.php';
 require SRC_PATH . '/Database.php';
 require SRC_PATH . '/Auth.php';
 require SRC_PATH . '/Calculadora.php';
+require SRC_PATH . '/Correo.php';
 require SRC_PATH . '/repositories/UsuarioRepository.php';
 require SRC_PATH . '/repositories/SimulacionRepository.php';
 require SRC_PATH . '/repositories/EstadisticasRepository.php';

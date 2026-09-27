@@ -10,4 +10,10 @@ return [
         'usuario'  => 'root',
         'password' => '',
     ],
+    // Cuenta de Gmail que ENVÍA los avisos de contacto. La contraseña es una
+    // "contraseña de aplicación" de Google (16 letras), no la contraseña normal.
+    'correo' => [
+        'smtp_usuario'  => 'tu-cuenta@gmail.com',
+        'smtp_password' => 'xxxx xxxx xxxx xxxx',
+    ],
 ];

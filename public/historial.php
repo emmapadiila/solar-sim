@@ -24,7 +24,7 @@ render('layout/header', ['titulo' => 'Historial', 'paginaActiva' => 'historial']
                 <div>
                     <p class="eyebrow"><i class="fas fa-clock-rotate-left"></i> Historial</p>
                     <h1 class="page-title">Tus simulaciones</h1>
-                    <p class="page-subtitle">Consulta el detalle de cada simulación guardada o descárgala como reporte.</p>
+                    <p class="page-subtitle">Consulta el detalle de cada simulación guardada o descárgala como reporte en PDF.</p>
                 </div>
                 <a href="calculadora.php" class="btn btn--primary"><i class="fas fa-plus"></i> Nueva simulación</a>
             </div>
@@ -95,7 +95,7 @@ render('layout/header', ['titulo' => 'Historial', 'paginaActiva' => 'historial']
                                     <i class="fas fa-eye"></i> Ver detalle
                                 </button>
                                 <button type="button" class="btn btn--ghost btn--sm" onclick="exportarSimulacion(<?= (int)$simulacion['id_simulacion'] ?>)">
-                                    <i class="fas fa-download"></i> Descargar
+                                    <i class="fas fa-file-pdf"></i> PDF
                                 </button>
                                 <button type="button" class="btn btn--danger btn--sm btn--icon" onclick="eliminarSimulacion(<?= (int)$simulacion['id_simulacion'] ?>)" aria-label="Eliminar simulación" title="Eliminar">
                                     <i class="fas fa-trash-can"></i>

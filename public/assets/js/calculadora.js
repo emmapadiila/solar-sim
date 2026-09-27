@@ -43,6 +43,12 @@ async function calcularAhorro(e) {
         tipo_energia: formData.get('tipo_energia')
     };
 
+    const boton = e.target.querySelector('button[type="submit"]');
+    const textoBoton = boton.innerHTML;
+    boton.disabled = true;
+    boton.classList.add('is-loading');
+    boton.innerHTML = '<i class="fas fa-circle-notch"></i> Calculando...';
+
     try {
         const data = await SolarSim.api('api/simulaciones/calcular.php', { method: 'POST', body: datos });
         if (!data.success) {
@@ -55,11 +61,16 @@ async function calcularAhorro(e) {
         document.getElementById('infoCard').classList.add('oculto');
         document.getElementById('resultadosCard').classList.remove('oculto');
         mostrarResultados(data.resultados);
+        SolarSim.animarNumeros(document.getElementById('resultadosCard'));
         crearGrafico(data.resultados);
         document.getElementById('resultadosCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
         console.error('Error:', error);
         SolarSim.error('Error de conexión con el servidor.');
+    } finally {
+        boton.disabled = false;
+        boton.classList.remove('is-loading');
+        boton.innerHTML = textoBoton;
     }
 }
 

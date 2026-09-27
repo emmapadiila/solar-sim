@@ -22,8 +22,10 @@ run_api(function () {
         json_response(['success' => false, 'message' => 'Alguno de los campos es demasiado largo.'], 422);
     }
 
-    // El mensaje queda guardado y el equipo lo revisa en la sección Mensajes (solo administradores).
+    // Primero se guarda (el equipo lo ve en la sección Mensajes) y después se avisa por correo.
+    // Si el correo falla, el mensaje no se pierde: queda guardado y el fallo va al log.
     MensajeRepository::crear(Auth::id(), $nombre, $email, $asunto !== '' ? $asunto : null, $mensaje);
+    Correo::avisarMensajeContacto($nombre, $email, $asunto !== '' ? $asunto : null, $mensaje);
 
     json_response(['success' => true, 'message' => "Recibimos tu mensaje. Te responderemos a $email."], 201);
 });

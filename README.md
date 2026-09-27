@@ -29,10 +29,14 @@ solar-sim/
 │   ├── Database.php            Conexión PDO única
 │   ├── Auth.php                Sesión y control de acceso
 │   ├── Calculadora.php         Modelo de cálculo solar (fuente única de verdad)
+│   ├── ReporteSimulacion.php   Reporte descargable en PDF
+│   ├── Correo.php              Aviso por correo de los mensajes de contacto
+│   ├── lib/fpdf/               FPDF 1.8.6 para generar el PDF (licencia permisiva)
+│   ├── lib/phpmailer/          PHPMailer 7.1.1 para enviar correos por SMTP (LGPL 2.1)
 │   └── repositories/           Todo el SQL: Usuario, Simulacion, Estadisticas, Mensaje
 ├── templates/
 │   ├── layout/                 head.php · header.php (menú) · footer.php
-│   └── export/simulacion.php   Reporte descargable
+│   └── email/contacto.php      Correo HTML del aviso de contacto
 ├── config/
 │   ├── config.php              Valores por defecto (XAMPP)
 │   └── config.local.example.php
@@ -85,6 +89,26 @@ assets/js/<pagina>.js ──fetch JSON──► public/api/.../*.php
 
 Usuarios de prueba: `Emma / emma123` (admin), `Breiner / breiner123`, `Juan / juan123`.
 Sus contraseñas se guardan en texto plano en el `.sql`, pero se convierten a hash la primera vez que inician sesión.
+
+## Aviso por correo de los mensajes de contacto
+
+Cada mensaje de la página Contacto se guarda (sección **Mensajes** del administrador) y además
+se envía a `pemma9962@gmail.com` por SMTP de Gmail. Para activarlo:
+
+1. En la cuenta de Gmail que enviará los avisos, activa la **verificación en dos pasos**.
+2. Crea una **contraseña de aplicación** en <https://myaccount.google.com/apppasswords>.
+3. En `config/config.local.php` (local y en el hosting) añade:
+
+   ```php
+   'correo' => [
+       'smtp_usuario'  => 'cuenta-que-envia@gmail.com',
+       'smtp_password' => 'la contraseña de aplicación de 16 letras',
+   ],
+   ```
+
+Sin estos datos la app funciona igual, pero no envía el correo. Si el envío falla, el mensaje
+no se pierde: queda en la sección Mensajes y el error se registra en el log del servidor.
+El destinatario se cambia en `config/config.php` (`correo.destino`).
 
 La sesión se cierra tras 30 minutos sin actividad (`app.sesion_minutos` en `config/config.php`).
 

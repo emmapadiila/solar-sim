@@ -80,7 +80,7 @@ render('layout/header', ['titulo' => 'Inicio', 'paginaActiva' => 'inicio']);
                             <span class="steps__num">3</span>
                             <div>
                                 <h3>Guarda y compara</h3>
-                                <p>Tus simulaciones quedan en el historial y puedes descargarlas como reporte.</p>
+                                <p>Tus simulaciones quedan en el historial y puedes descargarlas en PDF.</p>
                             </div>
                         </li>
                     </ol>

@@ -1,21 +1,5 @@
-// Página "Aprende": aparición suave de las tarjetas y glosario de términos técnicos.
+// Página "Aprende": glosario de términos técnicos (la aparición de tarjetas la hace app.js).
 document.addEventListener('DOMContentLoaded', function() {
-    // Aparición al hacer scroll (la clase .reveal está definida en style.css)
-    const tarjetas = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver(entries => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-        tarjetas.forEach(tarjeta => observer.observe(tarjeta));
-    } else {
-        tarjetas.forEach(tarjeta => tarjeta.classList.add('is-visible'));
-    }
-
     // Glosario: subraya los términos técnicos y muestra su definición al pasar el ratón
     const glosario = {
         fotovoltaico: 'Tecnología que convierte la luz solar en electricidad',

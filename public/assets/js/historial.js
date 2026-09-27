@@ -54,8 +54,8 @@ function exportarSimulacion(idSimulacion) {
 
     Swal.fire({
         icon: 'success',
-        title: 'Descargando reporte',
-        text: 'Puedes abrir el archivo en el navegador e imprimirlo como PDF.',
+        title: 'Descargando PDF',
+        text: 'El reporte de la simulación se está descargando.',
         confirmButtonColor: SolarSim.colores.navy,
         timer: 3000,
         timerProgressBar: true

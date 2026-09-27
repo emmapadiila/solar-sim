@@ -75,6 +75,7 @@
     --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
     --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
     --transition: 150ms ease;
+    --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 
     /* Layout */
     --container: 1180px;
@@ -267,6 +268,14 @@ textarea {
     text-decoration: none;
 }
 
+.logo__mark i {
+    transition: transform 0.6s var(--ease-out);
+}
+
+.logo:hover .logo__mark i {
+    transform: rotate(90deg);
+}
+
 .logo__mark {
     display: grid;
     place-items: center;
@@ -303,10 +312,38 @@ textarea {
     text-decoration: none;
 }
 
+.nav__link {
+    position: relative;
+}
+
+.nav__link::after {
+    content: '';
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0;
+    left: 0.75rem;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--sun-500);
+    transform: scaleX(0);
+    transition: transform 0.25s var(--ease-out);
+}
+
+.nav__link:hover::after {
+    transform: scaleX(0.6);
+}
+
 .nav__link.active {
     color: #fff;
     background: rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 -2px 0 var(--sun-500);
+}
+
+.nav__link.active::after {
+    transform: scaleX(1);
+}
+
+.logout-btn::after {
+    display: none;
 }
 
 .logout-btn {
@@ -1158,15 +1195,19 @@ textarea.form-control {
 }
 
 /* Aparición suave al hacer scroll (educativo.js) */
-.reveal {
+/* Aparición al entrar en pantalla. head.php añade .con-apariciones al <html> solo si hay JavaScript,
+   así las tarjetas ya salen ocultas en el primer pintado y el contenido nunca queda oculto sin JS.
+   app.js marca .is-visible al verlas y .revelado cuando termina la transición. */
+.con-apariciones .page :is(.card, .stat, .disclosure, .alert):not(.revelado) {
     opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(16px);
 }
 
-.reveal.is-visible {
+.con-apariciones .page .is-visible:not(.revelado) {
     opacity: 1;
     transform: none;
+    transition: opacity 0.55s ease, transform 0.55s var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
 }
 
 /* --- Acerca de --- */
@@ -1262,6 +1303,137 @@ textarea.form-control {
     margin-top: var(--space-4);
 }
 
+/* ========== ANIMACIONES ========== */
+@keyframes aparecer {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes desplegar {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes flotar {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+@keyframes resplandor {
+    0%, 100% { opacity: 0.55; transform: scale(1); }
+    50% { opacity: 0.85; transform: scale(1.08); }
+}
+
+@keyframes girar {
+    to { transform: rotate(360deg); }
+}
+
+/* Encabezado de cada página */
+.page-header {
+    animation: aparecer 0.5s var(--ease-out) both;
+}
+
+/* Botones: se elevan un poco, las flechas avanzan y se hunden al pulsar */
+.btn {
+    transition: background var(--transition), border-color var(--transition), color var(--transition),
+        box-shadow 0.2s ease, transform 0.2s var(--ease-out);
+}
+
+.btn:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+.btn:not(:disabled):active {
+    transform: translateY(1px);
+}
+
+.btn--primary:not(:disabled):hover {
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.35);
+}
+
+.btn--dark:not(:disabled):hover {
+    box-shadow: 0 6px 16px rgba(22, 41, 74, 0.3);
+}
+
+.btn i {
+    transition: transform 0.2s var(--ease-out);
+}
+
+.btn:hover .fa-arrow-right {
+    transform: translateX(3px);
+}
+
+.btn.is-loading i {
+    animation: girar 0.8s linear infinite;
+}
+
+/* Tarjetas que se pueden pulsar o que contienen acciones */
+.sim-card,
+.resource-card,
+.contact-item {
+    transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.sim-card:hover,
+.resource-card:hover,
+.contact-item:hover {
+    transform: translateY(-3px);
+    border-color: var(--gray-300);
+    box-shadow: var(--shadow-md);
+}
+
+.icon-badge {
+    transition: transform 0.3s var(--ease-out);
+}
+
+.card:hover > .icon-badge,
+.stat:hover .icon-badge,
+.contact-item:hover .icon-badge {
+    transform: scale(1.08) rotate(-4deg);
+}
+
+/* Estado vacío: el icono flota suavemente */
+.empty-state .icon-badge {
+    animation: flotar 3.5s ease-in-out infinite;
+}
+
+/* Avisos que aparecen */
+.flash,
+.form-message.is-visible {
+    animation: desplegar 0.3s var(--ease-out);
+}
+
+/* Login: entrada escalonada y resplandor de sol */
+.auth__aside {
+    position: relative;
+    overflow: hidden;
+}
+
+.auth__aside > * {
+    position: relative;
+    z-index: 1;
+    animation: aparecer 0.7s var(--ease-out) both;
+}
+
+.auth__aside > :nth-child(2) { animation-delay: 0.12s; }
+.auth__aside > :nth-child(3) { animation-delay: 0.24s; }
+
+.auth__aside::after {
+    content: '';
+    position: absolute;
+    top: -140px;
+    right: -140px;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.35), rgba(245, 158, 11, 0) 65%);
+    animation: resplandor 7s ease-in-out infinite;
+}
+
+.auth__panel {
+    animation: aparecer 0.6s var(--ease-out) 0.15s both;
+}
+
 /* ========== 7. UTILIDADES ========== */
 .oculto {
     display: none !important;
@@ -1284,9 +1456,9 @@ textarea.form-control {
         scroll-behavior: auto !important;
     }
 
-    .reveal {
-        opacity: 1;
-        transform: none;
+    .empty-state .icon-badge,
+    .auth__aside::after {
+        animation: none;
     }
 }
 
@@ -1321,8 +1493,16 @@ textarea.form-control {
         padding: 0.75rem 1rem;
     }
 
+    .nav__link::after {
+        display: none;
+    }
+
     .nav__link.active {
         box-shadow: inset 3px 0 0 var(--sun-500);
+    }
+
+    .site-header nav.abierto {
+        animation: desplegar 0.25s var(--ease-out);
     }
 
     .logout-btn {

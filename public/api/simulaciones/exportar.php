@@ -18,8 +18,9 @@ if (!$simulacion) {
     exit('Simulación no encontrada');
 }
 
-header('Content-Type: text/html; charset=utf-8');
-header('Content-Disposition: attachment; filename="simulacion_' . $id . '.html"');
-header('Cache-Control: no-cache, must-revalidate');
+require SRC_PATH . '/lib/fpdf/fpdf.php';
+require SRC_PATH . '/ReporteSimulacion.php';
 
-render('export/simulacion', ['simulacion' => $simulacion]);
+// Output('D') envía las cabeceras de descarga (application/pdf + attachment)
+header('Cache-Control: no-cache, must-revalidate');
+(new ReporteSimulacion($simulacion))->generar()->Output('D', 'simulacion_solar_' . $id . '.pdf');

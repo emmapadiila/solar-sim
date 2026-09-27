@@ -18,6 +18,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <script>
+        // Las tarjetas empiezan ocultas desde el primer pintado para que app.js las haga aparecer
+        // sin que antes se vean, desaparezcan y vuelvan a aparecer.
+        if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('con-apariciones');
+            // Si app.js no llega a ejecutarse, se muestra todo igual
+            setTimeout(function () {
+                if (!window.SolarSim) document.documentElement.classList.remove('con-apariciones');
+            }, 3000);
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <?php if (!empty($usarGraficos)): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
