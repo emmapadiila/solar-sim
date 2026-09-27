@@ -1179,29 +1179,6 @@ textarea.form-control {
     margin-top: var(--space-4);
 }
 
-.member {
-    text-align: center;
-}
-
-.member__avatar {
-    display: grid;
-    place-items: center;
-    width: 72px;
-    height: 72px;
-    margin: 0 auto var(--space-4);
-    border-radius: 50%;
-    background: var(--navy-800);
-    box-shadow: 0 0 0 4px var(--sun-100);
-    font-family: var(--font-heading);
-    font-size: var(--fs-xl);
-    font-weight: 600;
-    color: var(--sun-400);
-}
-
-.member h3 {
-    font-size: var(--fs-base);
-}
-
 /* --- Mensajes (administración) --- */
 .message {
     display: grid;

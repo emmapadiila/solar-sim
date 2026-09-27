@@ -3,15 +3,6 @@ require __DIR__ . '/../src/bootstrap.php';
 
 Auth::requireLogin();
 
-$equipo = ['Breiner Durán', 'Emma Padilla', 'Sharick Camargo', 'Juan Martínez'];
-
-/** "Emma Padilla" -> "EP" */
-function iniciales(string $nombre): string
-{
-    $partes = preg_split('/\s+/', trim($nombre));
-    return mb_strtoupper(mb_substr($partes[0], 0, 1) . mb_substr(end($partes), 0, 1));
-}
-
 render('layout/header', ['titulo' => 'Nosotros', 'paginaActiva' => 'about']);
 ?>
 
@@ -43,18 +34,6 @@ render('layout/header', ['titulo' => 'Nosotros', 'paginaActiva' => 'about']);
                     <p class="card__text">Ser el sistema líder en Latinoamérica en concientización, educación y simulación del aprovechamiento solar, facilitando la transición hacia un modelo energético sostenible, justo y accesible para todas las comunidades, especialmente las más vulnerables.</p>
                 </section>
             </div>
-
-            <section class="section">
-                <h2 class="section-title">Nuestro equipo</h2>
-                <div class="grid grid--4">
-                    <?php foreach ($equipo as $persona): ?>
-                        <div class="card member">
-                            <span class="member__avatar" aria-hidden="true"><?= e(iniciales($persona)) ?></span>
-                            <h3><?= e($persona) ?></h3>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
         </div>
     </main>
 
