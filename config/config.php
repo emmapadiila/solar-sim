@@ -11,6 +11,8 @@ $config = [
     'app' => [
         'nombre' => 'SolarSim',
         'debug'  => (bool)(getenv('SOLARSIM_DEBUG') ?: false),
+        // Minutos sin actividad antes de cerrar la sesión automáticamente
+        'sesion_minutos' => (int)(getenv('SOLARSIM_SESION_MINUTOS') ?: 30),
     ],
     'db' => [
         'host'     => getenv('SOLARSIM_DB_HOST') ?: 'localhost',

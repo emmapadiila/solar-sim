@@ -6,55 +6,60 @@ Auth::requireLogin();
 render('layout/header', ['titulo' => 'Contacto', 'paginaActiva' => 'contacto']);
 ?>
 
-    <main class="content-page">
-        <section class="contact-section">
-            <div class="contact-container">
-                <h1 class="page-title">Contáctanos</h1>
-                <p class="intro-text">¿Tienes preguntas, sugerencias o necesitas soporte? No dudes en contactarnos. Estamos aquí para ayudarte.</p>
-
-                <div class="contact-info-grid">
-                    <div class="info-item">
-                        <i class="fas fa-envelope icon-animated"></i>
-                        <h3>Correo Electrónico</h3>
-                        <p><a href="mailto:emma-padillaj@unilibre.edu.co">emma-padillaj@unilibre.edu.co</a></p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-phone icon-animated"></i>
-                        <h3>Teléfono</h3>
-                        <p><a href="tel:+573225377936">+57 3225377936</a></p>
-                    </div>
-                    <div class="info-item">
-                        <i class="fas fa-map-marker-alt icon-animated"></i>
-                        <h3>Dirección</h3>
-                        <p>Calle 42 A 6B 47</p>
-                    </div>
-                </div>
-
-                <div class="contact-form-container">
-                    <h2>Envíanos un Mensaje</h2>
-                    <form class="contact-form" id="contactForm">
-                        <div class="form-group">
-                            <label for="name">Nombre</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Correo Electrónico</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="subject">Asunto</label>
-                            <input type="text" id="subject" name="subject">
-                        </div>
-                        <div class="form-group">
-                            <label for="message">Mensaje</label>
-                            <textarea id="message" name="message" rows="6" required></textarea>
-                        </div>
-                        <button type="submit" class="auth-btn">Enviar Mensaje <i class="fas fa-paper-plane"></i></button>
-                        <div id="contactMessage" class="message-area"></div>
-                    </form>
+    <main class="page">
+        <div class="container">
+            <div class="page-header">
+                <div>
+                    <p class="eyebrow"><i class="fas fa-envelope"></i> Contacto</p>
+                    <h1 class="page-title">Hablemos</h1>
+                    <p class="page-subtitle">¿Tienes preguntas, sugerencias o necesitas soporte? Escríbenos y te responderemos lo antes posible.</p>
                 </div>
             </div>
-        </section>
+
+            <div class="grid grid--sidebar">
+                <div class="stack">
+                    <div class="card contact-item">
+                        <span class="icon-badge icon-badge--navy"><i class="fas fa-envelope"></i></span>
+                        <div>
+                            <p class="contact-item__label">Correo electrónico</p>
+                            <a class="contact-item__value" href="mailto:emma-padillaj@unilibre.edu.co">emma-padillaj@unilibre.edu.co</a>
+                        </div>
+                    </div>
+                    <div class="card contact-item">
+                        <span class="icon-badge icon-badge--navy"><i class="fas fa-phone"></i></span>
+                        <div>
+                            <p class="contact-item__label">Teléfono</p>
+                            <a class="contact-item__value" href="tel:+573225377936">+57 322 537 7936</a>
+                        </div>
+                    </div>
+                </div>
+
+                <form class="card" id="contactForm" novalidate>
+                    <div class="card__header">
+                        <h2 class="card__title"><i class="fas fa-paper-plane"></i> Envíanos un mensaje</h2>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="name">Nombre</label>
+                            <input type="text" id="name" name="name" class="form-control" autocomplete="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Correo electrónico</label>
+                            <input type="email" id="email" name="email" class="form-control" autocomplete="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="subject">Asunto <span class="text-muted">(opcional)</span></label>
+                        <input type="text" id="subject" name="subject" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="message">Mensaje</label>
+                        <textarea id="message" name="message" class="form-control" rows="6" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn--dark"><i class="fas fa-paper-plane"></i> Enviar mensaje</button>
+                </form>
+            </div>
+        </div>
     </main>
 
 <?php render('layout/footer', ['scripts' => ['contacto.js']]); ?>

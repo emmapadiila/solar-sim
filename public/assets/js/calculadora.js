@@ -1,6 +1,8 @@
 // Calculadora solar. Los cálculos los hace el servidor (src/Calculadora.php) a través de la API.
 let graficoAhorro = null;
 let datosSimulacion = null; // datos de entrada de la última simulación calculada
+let simulacionGuardada = false; // evita guardar dos veces la misma simulación
+const TEXTO_GUARDAR = '<i class="fas fa-floppy-disk"></i> Guardar simulación';
 
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('calculadoraForm').addEventListener('submit', calcularAhorro);
@@ -49,109 +51,67 @@ async function calcularAhorro(e) {
         }
 
         datosSimulacion = datos;
+        reiniciarGuardado();
+        document.getElementById('infoCard').classList.add('oculto');
+        document.getElementById('resultadosCard').classList.remove('oculto');
         mostrarResultados(data.resultados);
         crearGrafico(data.resultados);
-
-        document.getElementById('resultadosCard').style.display = 'block';
-        document.getElementById('infoCard').style.display = 'none';
-        document.getElementById('resultadosCard').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('resultadosCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
         console.error('Error:', error);
         SolarSim.error('Error de conexión con el servidor.');
     }
 }
 
-function mostrarResultados(resultados) {
-    // Actualizar valores en la interfaz de resultados principales
-    document.getElementById('energiaGenerada').textContent = `${resultados.energiaGenerada} kWh/mes`;
-    document.getElementById('ahorroMensual').textContent = `$${SolarSim.formatearNumero(resultados.ahorroMensual)}`;
-    document.getElementById('ahorroAnual').textContent = `$${SolarSim.formatearNumero(resultados.ahorroAnual)}`;
-    document.getElementById('retornoInversion').textContent = `${resultados.retornoInversion} años`;
-    document.getElementById('inversionNecesaria').textContent = `$${SolarSim.formatearNumero(resultados.costoInstalacion)}`;
-    
-    // Actualizar la nueva sección de paneles recomendados
-    document.getElementById('panelesNecesarios').querySelector('.valor-panel').textContent = resultados.panelesNecesarios;
-    document.getElementById('panelesInstalables').querySelector('.valor-panel').textContent = resultados.panelesInstalables;
-    document.getElementById('coberturaConsumo').querySelector('.valor-panel').textContent = `${resultados.porcentajeCobertura.toFixed(1)}%`;
-    document.getElementById('mensajePaneles').textContent = resultados.mensajePaneles;
-    
-    // Aplicar animaciones a los elementos de resultados principales (ya existentes)
-    const elementos = document.querySelectorAll('.resultados-grid .resultado-valor');
-    elementos.forEach((elemento, index) => {
-        setTimeout(() => {
-            elemento.style.opacity = '0';
-            elemento.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                elemento.style.opacity = '1';
-                elemento.style.transform = 'translateY(0)';
-            }, 100);
-        }, index * 200);
-    });
+function mostrarResultados(r) {
+    const unidad = texto => `<span class="stat__unit">${texto}</span>`;
 
-    // Mostrar la nueva sección de paneles
-    document.querySelector('.paneles-recomendados-section').style.display = 'block';
+    document.getElementById('ahorroMensual').textContent = SolarSim.moneda(r.ahorroMensual);
+    document.getElementById('ahorroAnual').textContent = SolarSim.moneda(r.ahorroAnual);
+    document.getElementById('energiaGenerada').innerHTML = SolarSim.numero(r.energiaGenerada, 1) + unidad('kWh/mes');
+    document.getElementById('inversionNecesaria').textContent = SolarSim.moneda(r.costoInstalacion);
+    document.getElementById('retornoInversion').innerHTML = SolarSim.numero(r.retornoInversion, 1) + unidad('años');
+
+    document.querySelector('#panelesNecesarios .valor-panel').textContent = r.panelesNecesarios;
+    document.querySelector('#panelesInstalables .valor-panel').textContent = r.panelesInstalables;
+    document.querySelector('#coberturaConsumo .valor-panel').textContent = `${SolarSim.numero(r.porcentajeCobertura, 1)} %`;
+    document.getElementById('mensajePaneles').textContent = r.mensajePaneles;
 }
 
 function crearGrafico(resultados) {
-    const ctx = document.getElementById('graficoAhorro').getContext('2d');
-    
-    // Destruir gráfico anterior si existe
     if (graficoAhorro) {
         graficoAhorro.destroy();
     }
-    
-    graficoAhorro = new Chart(ctx, {
+
+    graficoAhorro = new Chart(document.getElementById('graficoAhorro'), {
         type: 'bar',
         data: {
-            labels: ['Consumo Actual', 'Energía Solar Generada'],
+            labels: ['Consumo actual', 'Generación solar'],
             datasets: [{
-                label: 'Consumo vs. Generación',
                 data: [datosSimulacion.consumo_mensual, resultados.energiaGenerada],
-                backgroundColor: [
-                    'rgba(67, 97, 238, 0.7)', // Azul para consumo
-                    'rgba(46, 204, 113, 0.7)' // Verde para energía generada
-                ],
-                borderColor: [
-                    'rgba(67, 97, 238, 1)',
-                    'rgba(46, 204, 113, 1)'
-                ],
-                borderWidth: 1
+                backgroundColor: [SolarSim.colores.navy, SolarSim.colores.sol],
+                borderRadius: 6,
+                maxBarThickness: 90
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Consumo / Generación (kWh/mes)'
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: context => `${SolarSim.numero(context.parsed.y, 1)} kWh/mes`
                     }
                 }
             },
-            plugins: {
-                legend: {
-                    display: false
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'kWh/mes' },
+                    grid: { color: SolarSim.colores.rejilla }
                 },
-                title: {
-                    display: true,
-                    text: 'Comparativa de Consumo vs. Generación Solar'
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += `${context.parsed.y} kWh/mes`;
-                            }
-                            return label;
-                        }
-                    }
-                }
+                x: { grid: { display: false } }
             }
         }
     });
@@ -159,34 +119,67 @@ function crearGrafico(resultados) {
 
 async function guardarSimulacion() {
     if (!datosSimulacion) {
-        SolarSim.error('No hay una simulación para guardar. Por favor, realiza una simulación primero.');
+        SolarSim.error('No hay una simulación para guardar. Realiza una simulación primero.');
+        return;
+    }
+    if (simulacionGuardada) {
         return;
     }
 
+    const btnGuardar = document.getElementById('btnGuardar');
+    btnGuardar.disabled = true;
     SolarSim.cargando('Guardando simulación...');
 
     try {
         // Solo se envían los datos de entrada: el servidor recalcula los resultados antes de guardar.
         const data = await SolarSim.api('api/simulaciones/guardar.php', { method: 'POST', body: datosSimulacion });
-        if (data.success) {
-            SolarSim.exito('¡Simulación guardada exitosamente!');
-        } else {
+        if (!data.success) {
+            btnGuardar.disabled = false;
             SolarSim.error(data.message || 'Error al guardar la simulación.');
+            return;
+        }
+
+        simulacionGuardada = true;
+        btnGuardar.innerHTML = '<i class="fas fa-check"></i> Guardada';
+        document.getElementById('btnVerHistorial').classList.remove('oculto');
+
+        const respuesta = await Swal.fire({
+            icon: 'success',
+            title: 'Simulación guardada',
+            text: 'Ya está en tu historial, donde puedes ver el detalle o descargar el reporte.',
+            showCancelButton: true,
+            confirmButtonText: 'Ver en historial',
+            cancelButtonText: 'Seguir aquí',
+            confirmButtonColor: SolarSim.colores.navy,
+            cancelButtonColor: SolarSim.colores.gris
+        });
+        if (respuesta.isConfirmed) {
+            window.location.href = 'historial.php';
         }
     } catch (error) {
         console.error('Error:', error);
+        btnGuardar.disabled = false;
         SolarSim.error('Error de conexión con el servidor.');
     }
 }
 
+function reiniciarGuardado() {
+    simulacionGuardada = false;
+    const btnGuardar = document.getElementById('btnGuardar');
+    btnGuardar.disabled = false;
+    btnGuardar.innerHTML = TEXTO_GUARDAR;
+    document.getElementById('btnVerHistorial').classList.add('oculto');
+}
+
 function nuevaSimulacion() {
     document.getElementById('calculadoraForm').reset();
-    document.getElementById('resultadosCard').style.display = 'none';
-    document.getElementById('infoCard').style.display = 'block';
-    document.querySelector('.paneles-recomendados-section').style.display = 'none';
+    document.getElementById('resultadosCard').classList.add('oculto');
+    document.getElementById('infoCard').classList.remove('oculto');
     if (graficoAhorro) {
         graficoAhorro.destroy();
         graficoAhorro = null;
     }
     datosSimulacion = null;
+    reiniciarGuardado();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }

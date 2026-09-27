@@ -13,10 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 Swal.fire({
                     icon: 'success',
-                    title: '¡Mensaje Enviado!',
-                    text: data.message || 'Tu mensaje ha sido enviado correctamente.',
-                    showConfirmButton: false,
-                    timer: 3000
+                    title: 'Mensaje recibido',
+                    text: data.message,
+                    confirmButtonColor: SolarSim.colores.navy
                 });
                 contactForm.reset();
             } else {

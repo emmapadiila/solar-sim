@@ -6,9 +6,10 @@ Auth::requireAdmin();
 $ahorroPorCiudad = EstadisticasRepository::ahorroPorCiudad();
 $puntosAreaEnergia = EstadisticasRepository::puntosAreaEnergia();
 $ultimasSimulaciones = EstadisticasRepository::ultimasSimulaciones(10);
+$hayDatos = !empty($ahorroPorCiudad);
 
-$promedioArea = $puntosAreaEnergia ? round(array_sum(array_column($puntosAreaEnergia, 'x')) / count($puntosAreaEnergia)) : 0;
-$promedioEnergia = $puntosAreaEnergia ? round(array_sum(array_column($puntosAreaEnergia, 'y')) / count($puntosAreaEnergia)) : 0;
+$promedioArea = $puntosAreaEnergia ? array_sum(array_column($puntosAreaEnergia, 'x')) / count($puntosAreaEnergia) : 0;
+$promedioEnergia = $puntosAreaEnergia ? array_sum(array_column($puntosAreaEnergia, 'y')) / count($puntosAreaEnergia) : 0;
 
 $nombresCiudades = [];
 foreach (array_keys($ahorroPorCiudad) as $clave) {
@@ -23,93 +24,112 @@ $datosGraficos = [
     'areaEnergia' => $puntosAreaEnergia,
 ];
 
-render('layout/header', ['titulo' => 'Estadísticas', 'paginaActiva' => 'estadisticas', 'usarGraficos' => true]);
+render('layout/header', ['titulo' => 'Estadísticas', 'paginaActiva' => 'estadisticas', 'usarGraficos' => $hayDatos]);
 ?>
 
-    <main class="stats-content">
-        <div class="stats-container">
-            <h1 class="page-title"><i class="fas fa-chart-line"></i> Estadísticas del Sistema</h1>
-
-            <!-- Filtros -->
-            <div class="stats-filters">
-                <div class="filter-group">
-                    <label for="filterCiudad">Ciudad:</label>
-                    <select id="filterCiudad">
+    <main class="page">
+        <div class="container">
+            <div class="page-header">
+                <div>
+                    <p class="eyebrow"><i class="fas fa-chart-pie"></i> Administración</p>
+                    <h1 class="page-title">Estadísticas del sistema</h1>
+                    <p class="page-subtitle">Promedios de todas las simulaciones guardadas por los usuarios.</p>
+                </div>
+                <?php if ($hayDatos): ?>
+                <div class="page-header__filter">
+                    <label class="form-label" for="filterCiudad">Filtrar por ciudad</label>
+                    <select id="filterCiudad" class="form-control">
                         <option value="">Todas las ciudades</option>
                         <?php foreach ($nombresCiudades as $clave => $nombre): ?>
                             <option value="<?= e($clave) ?>"><?= e($nombre) ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
+                <?php endif; ?>
             </div>
 
-            <!-- Gráficos -->
-            <div class="stats-grid">
-                <div class="stats-card">
-                    <h3><i class="fas fa-piggy-bank"></i> Ahorros Promedio por Ciudad</h3>
-                    <canvas id="graficoAhorros"></canvas>
-                </div>
-
-                <div class="stats-card">
-                    <h3><i class="fas fa-bolt"></i> Energía Generada por Ciudad</h3>
-                    <canvas id="graficoEnergia"></canvas>
-                </div>
-
-                <div class="stats-card">
-                    <h3><i class="fas fa-clock"></i> Retorno de Inversión</h3>
-                    <canvas id="graficoRetorno"></canvas>
-                </div>
-
-                <div class="stats-card">
-                    <h3><i class="fas fa-chart-area"></i> Relación Área-Energía</h3>
-                    <div class="stats-summary">
-                        <p class="stats-info">
-                            <i class="fas fa-info-circle"></i>
-                            Con un promedio de <strong><?= $promedioArea ?> m²</strong>,
-                            se están generando <strong><?= $promedioEnergia ?> kWh/mes</strong> en promedio.
-                        </p>
+            <?php if (!$hayDatos): ?>
+                <div class="card">
+                    <div class="empty-state">
+                        <span class="icon-badge"><i class="fas fa-chart-column"></i></span>
+                        <h2>Todavía no hay datos</h2>
+                        <p>Las estadísticas aparecerán cuando los usuarios guarden sus primeras simulaciones.</p>
                     </div>
-                    <canvas id="graficoAreaEnergia"></canvas>
                 </div>
-            </div>
+            <?php else: ?>
+                <div class="grid grid--2">
+                    <section class="card">
+                        <div class="card__header">
+                            <h2 class="card__title"><i class="fas fa-piggy-bank"></i> Ahorro mensual promedio</h2>
+                        </div>
+                        <div class="chart-box"><canvas id="graficoAhorros"></canvas></div>
+                    </section>
 
-            <!-- Últimas Simulaciones -->
-            <div class="ultimas-simulaciones">
-                <h3><i class="fas fa-history"></i> Últimas Simulaciones</h3>
-                <div class="table-responsive">
-                    <table class="stats-table">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Usuario</th>
-                                <th>Ciudad</th>
-                                <th>Estrato</th>
-                                <th>Área</th>
-                                <th>Ahorro Mensual</th>
-                                <th>Retorno</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($ultimasSimulaciones as $simulacion): ?>
-                            <tr>
-                                <td><?= date('d/m/Y H:i', strtotime($simulacion['fecha'])) ?></td>
-                                <td><?= e($simulacion['nombre_usuario']) ?></td>
-                                <td><?= e(Calculadora::nombreCiudad($simulacion['ubicacion'])) ?></td>
-                                <td><?= e($simulacion['estrato']) ?></td>
-                                <td><?= e($simulacion['area_disponible']) ?> m²</td>
-                                <td>$<?= number_format((float)$simulacion['ahorro_mensual'], 0, ',', '.') ?></td>
-                                <td><?= number_format((float)$simulacion['retorno_inversion'], 1) ?> años</td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <section class="card">
+                        <div class="card__header">
+                            <h2 class="card__title"><i class="fas fa-bolt"></i> Energía generada promedio</h2>
+                        </div>
+                        <div class="chart-box"><canvas id="graficoEnergia"></canvas></div>
+                    </section>
+
+                    <section class="card">
+                        <div class="card__header">
+                            <h2 class="card__title"><i class="fas fa-hourglass-half"></i> Retorno de inversión promedio</h2>
+                        </div>
+                        <div class="chart-box"><canvas id="graficoRetorno"></canvas></div>
+                    </section>
+
+                    <section class="card">
+                        <div class="card__header">
+                            <h2 class="card__title"><i class="fas fa-chart-area"></i> Relación área – energía</h2>
+                        </div>
+                        <p class="card__text mb-5">
+                            Con un área promedio de <strong><?= formato_numero($promedioArea) ?> m²</strong>
+                            se generan en promedio <strong><?= formato_numero($promedioEnergia) ?> kWh/mes</strong>.
+                        </p>
+                        <div class="chart-box"><canvas id="graficoAreaEnergia"></canvas></div>
+                    </section>
                 </div>
-            </div>
+
+                <section class="card section">
+                    <div class="card__header">
+                        <h2 class="card__title"><i class="fas fa-clock-rotate-left"></i> Últimas simulaciones</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Usuario</th>
+                                    <th>Ciudad</th>
+                                    <th>Estrato</th>
+                                    <th class="text-right">Área</th>
+                                    <th class="text-right">Ahorro mensual</th>
+                                    <th class="text-right">Retorno</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($ultimasSimulaciones as $simulacion): ?>
+                                <tr>
+                                    <td><?= date('d/m/Y H:i', strtotime($simulacion['fecha'])) ?></td>
+                                    <td><?= e($simulacion['nombre_usuario']) ?></td>
+                                    <td><?= e(Calculadora::nombreCiudad($simulacion['ubicacion'])) ?></td>
+                                    <td><?= e($simulacion['estrato']) ?></td>
+                                    <td class="text-right"><?= formato_numero($simulacion['area_disponible']) ?> m²</td>
+                                    <td class="text-right"><?= formato_moneda($simulacion['ahorro_mensual']) ?></td>
+                                    <td class="text-right"><?= formato_numero($simulacion['retorno_inversion'], 1) ?> años</td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <script>
+                    window.ESTADISTICAS = <?= json_encode($datosGraficos, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>;
+                </script>
+            <?php endif; ?>
         </div>
     </main>
 
-    <script>
-        window.ESTADISTICAS = <?= json_encode($datosGraficos, JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>;
-    </script>
-
-<?php render('layout/footer', ['scripts' => ['estadisticas.js']]); ?>
+<?php render('layout/footer', ['scripts' => $hayDatos ? ['estadisticas.js'] : []]); ?>

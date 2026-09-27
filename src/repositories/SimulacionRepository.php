@@ -72,6 +72,35 @@ final class SimulacionRepository
         return $stmt->fetch() ?: null;
     }
 
+    /**
+     * Elimina una simulación del usuario (sus resultados se borran en cascada)
+     * y descuenta el total de su historial. Devuelve false si no era suya o no existe.
+     */
+    public static function eliminar(int $idSimulacion, int $idUsuario): bool
+    {
+        $db = Database::get();
+        $db->beginTransaction();
+
+        try {
+            $stmt = $db->prepare('DELETE FROM tbl_simulacion WHERE id_simulacion = ? AND id_usuarioFK = ?');
+            $stmt->execute([$idSimulacion, $idUsuario]);
+
+            if ($stmt->rowCount() === 0) {
+                $db->rollBack();
+                return false;
+            }
+
+            $db->prepare('UPDATE tbl_historial SET total_simulaciones = GREATEST(total_simulaciones - 1, 0) WHERE id_usuarioFK = ?')
+               ->execute([$idUsuario]);
+
+            $db->commit();
+            return true;
+        } catch (Throwable $ex) {
+            $db->rollBack();
+            throw $ex;
+        }
+    }
+
     private static function incrementarHistorial(int $idUsuario): int
     {
         $db = Database::get();

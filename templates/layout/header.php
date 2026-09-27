@@ -10,22 +10,26 @@ $enlaces = [
     'inicio'       => ['dashboard.php',    'Inicio'],
     'calculadora'  => ['calculadora.php',  'Calculadora'],
     'historial'    => ['historial.php',    'Historial'],
-    'educativo'    => ['educativo.php',    'Contenido Educativo'],
+    'educativo'    => ['educativo.php',    'Aprende'],
     'estadisticas' => ['estadisticas.php', 'Estadísticas', 'admin'],
-    'about'        => ['about.php',        'Acerca de Nosotros'],
+    'mensajes'     => ['mensajes.php',     'Mensajes', 'admin'],
+    'about'        => ['about.php',        'Nosotros'],
     'contacto'     => ['contacto.php',     'Contacto'],
 ];
 
 require __DIR__ . '/head.php';
 ?>
 <body>
-    <header>
+    <header class="site-header">
         <div class="header-container">
             <a href="dashboard.php" class="logo">
-                <i class="fas fa-solar-panel"></i>
+                <span class="logo__mark"><i class="fas fa-sun"></i></span>
                 <span><?= e(config('app.nombre')) ?></span>
             </a>
-            <nav>
+            <button type="button" class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menuPrincipal">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav id="menuPrincipal">
                 <ul class="nav__list">
                     <?php foreach ($enlaces as $clave => $enlace): ?>
                         <?php if (($enlace[2] ?? null) === 'admin' && !Auth::isAdmin()) continue; ?>
@@ -34,9 +38,18 @@ require __DIR__ . '/head.php';
                         </li>
                     <?php endforeach; ?>
                     <li class="nav__item">
-                        <a href="#" id="logoutBtn" class="nav__link logout-btn">Cerrar Sesión <i class="fas fa-sign-out-alt"></i></a>
+                        <a href="#" id="logoutBtn" class="nav__link logout-btn"><i class="fas fa-arrow-right-from-bracket"></i> Cerrar sesión</a>
                     </li>
                 </ul>
             </nav>
         </div>
     </header>
+
+    <?php if ($aviso = flash_pull()): ?>
+        <div class="container">
+            <div class="alert alert--<?= e($aviso['tipo']) ?> flash" role="status">
+                <i class="fas fa-circle-info"></i>
+                <span><?= e($aviso['mensaje']) ?></span>
+            </div>
+        </div>
+    <?php endif; ?>

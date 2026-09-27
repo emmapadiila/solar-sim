@@ -20,6 +20,7 @@ require SRC_PATH . '/Calculadora.php';
 require SRC_PATH . '/repositories/UsuarioRepository.php';
 require SRC_PATH . '/repositories/SimulacionRepository.php';
 require SRC_PATH . '/repositories/EstadisticasRepository.php';
+require SRC_PATH . '/repositories/MensajeRepository.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_name('SOLARSIMSESSID');
@@ -32,3 +33,14 @@ if (session_status() === PHP_SESSION_NONE) {
     ]);
     session_start();
 }
+
+// Cierre de sesión por inactividad
+$minutosSesion = (int)config('app.sesion_minutos', 30);
+if (Auth::check() && isset($_SESSION['ultima_actividad']) && time() - $_SESSION['ultima_actividad'] > $minutosSesion * 60) {
+    Auth::logout();
+    session_start();
+    session_regenerate_id(true);
+    $unidad = $minutosSesion === 1 ? 'minuto' : 'minutos';
+    flash("Tu sesión se cerró tras $minutosSesion $unidad sin actividad. Vuelve a iniciar sesión.", 'info');
+}
+$_SESSION['ultima_actividad'] = time();

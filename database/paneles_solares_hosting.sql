@@ -18,11 +18,11 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `paneles_solares`
+-- VERSIÓN PARA HOSTING: importar dentro de la base de datos creada desde el panel del hosting.
+-- No incluye creación de base de datos, triggers ni procedimientos (los hostings compartidos no los permiten).
+-- ¡Cambia las contraseñas de los usuarios semilla antes de importar!
 --
 
-CREATE DATABASE IF NOT EXISTS `paneles_solares` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-USE `paneles_solares`;
 
 -- --------------------------------------------------------
 
@@ -239,43 +239,8 @@ INSERT INTO tbl_usuarios (nombre, contrasena, direccion, edad, rol) VALUES
 ('Breiner', 'breiner123', 'calle 50', 25, 'usuario'),
 ('Juan', 'juan123', 'calle 40 31', 28, 'usuario');
 
---
--- Triggers
---
-
--- Trigger para prevenir la eliminación de usuarios fijos
-DELIMITER //
-CREATE TRIGGER prevent_fixed_users_deletion
-BEFORE DELETE ON tbl_usuarios
-FOR EACH ROW
-BEGIN
-    IF (OLD.nombre = 'Emma' AND OLD.rol = 'admin') OR
-       (OLD.nombre = 'Breiner' AND OLD.rol = 'usuario') OR
-       (OLD.nombre = 'Juan' AND OLD.rol = 'usuario') THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'No se puede eliminar un usuario fijo del sistema';
-    END IF;
-END//
-DELIMITER ;
-
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-DELIMITER //
-
-CREATE PROCEDURE `registrar_usuario` (
-    IN `p_nombre` VARCHAR(50), 
-    IN `p_contrasena` VARCHAR(255), 
-    IN `p_direccion` VARCHAR(255), 
-    IN `p_edad` INT, 
-    IN `p_rol` ENUM('admin','usuario')
-) 
-BEGIN
-    INSERT INTO tbl_usuarios (nombre, contrasena, direccion, edad, rol)
-    VALUES (p_nombre, p_contrasena, p_direccion, p_edad, p_rol);
-END //
-
-DELIMITER ;

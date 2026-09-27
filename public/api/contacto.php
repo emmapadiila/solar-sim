@@ -9,15 +9,21 @@ run_api(function () {
 
     $nombre = trim((string)($datos['name'] ?? ''));
     $email = trim((string)($datos['email'] ?? ''));
+    $asunto = trim((string)($datos['subject'] ?? ''));
     $mensaje = trim((string)($datos['message'] ?? ''));
 
     if ($nombre === '' || $email === '' || $mensaje === '') {
-        json_response(['success' => false, 'message' => 'Por favor, completa todos los campos requeridos (Nombre, Correo Electrónico, Mensaje).'], 422);
+        json_response(['success' => false, 'message' => 'Completa tu nombre, tu correo y el mensaje.'], 422);
     }
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        json_response(['success' => false, 'message' => 'El formato del correo electrónico es inválido.'], 422);
+        json_response(['success' => false, 'message' => 'El correo electrónico no es válido.'], 422);
+    }
+    if (mb_strlen($nombre) > 100 || mb_strlen($email) > 150 || mb_strlen($asunto) > 150 || mb_strlen($mensaje) > 5000) {
+        json_response(['success' => false, 'message' => 'Alguno de los campos es demasiado largo.'], 422);
     }
 
-    // SIMULACIÓN: todavía no se envía ningún correo; aquí iría mail() o PHPMailer.
-    json_response(['success' => true, 'message' => '¡Gracias! Tu mensaje ha sido enviado exitosamente.']);
+    // El mensaje queda guardado y el equipo lo revisa en la sección Mensajes (solo administradores).
+    MensajeRepository::crear(Auth::id(), $nombre, $email, $asunto !== '' ? $asunto : null, $mensaje);
+
+    json_response(['success' => true, 'message' => "Recibimos tu mensaje. Te responderemos a $email."], 201);
 });

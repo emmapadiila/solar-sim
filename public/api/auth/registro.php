@@ -31,6 +31,11 @@ run_api(function () {
     }
 
     UsuarioRepository::crear($nombre, $contrasena, $direccion, $edad);
+    Auth::login(UsuarioRepository::buscarPorNombre($nombre));
 
-    json_response(['success' => true, 'message' => 'Usuario registrado exitosamente'], 201);
+    json_response([
+        'success'  => true,
+        'message'  => 'Usuario registrado exitosamente',
+        'redirect' => 'dashboard.php',
+    ], 201);
 });

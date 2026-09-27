@@ -18,8 +18,9 @@ run_api(function () {
     }
 
     json_response([
-        'success' => true,
-        'message' => 'Inicio de sesión exitoso',
-        'usuario' => Auth::login($usuario),
+        'success'  => true,
+        'message'  => 'Inicio de sesión exitoso',
+        'usuario'  => Auth::login($usuario),
+        'redirect' => Auth::destinoTrasLogin(),
     ]);
 });

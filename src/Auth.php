@@ -53,10 +53,15 @@ final class Auth
         session_destroy();
     }
 
-    /** Para páginas: redirige al login si no hay sesión. */
+    /** Para páginas: redirige al login si no hay sesión, recordando a dónde quería ir. */
     public static function requireLogin(): array
     {
         if (!self::check()) {
+            if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+                $pagina = basename($_SERVER['SCRIPT_NAME']);
+                $query = $_SERVER['QUERY_STRING'] ?? '';
+                $_SESSION['destino'] = $pagina . ($query !== '' ? '?' . $query : '');
+            }
             header('Location: index.php');
             exit;
         }
@@ -68,10 +73,28 @@ final class Auth
     {
         $usuario = self::requireLogin();
         if (!self::isAdmin()) {
+            flash('Esa sección es solo para administradores.');
             header('Location: dashboard.php');
             exit;
         }
         return $usuario;
+    }
+
+    /**
+     * Página a la que ir después de iniciar sesión: la que se pidió antes del login
+     * (solo páginas propias de public/) o el panel.
+     */
+    public static function destinoTrasLogin(): string
+    {
+        $destino = $_SESSION['destino'] ?? '';
+        unset($_SESSION['destino']);
+
+        if (preg_match('/^([a-z_]+\.php)(\?[\w=&%.-]*)?$/', $destino, $m)
+            && $m[1] !== 'index.php'
+            && is_file(ROOT_PATH . '/public/' . $m[1])) {
+            return $destino;
+        }
+        return 'dashboard.php';
     }
 
     /** Para endpoints JSON: responde 401 si no hay sesión. */

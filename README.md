@@ -12,10 +12,12 @@ solar-sim/
 │   ├── calculadora.php         Formulario de simulación
 │   ├── historial.php           Simulaciones del usuario
 │   ├── estadisticas.php        Panel de administrador
+│   ├── mensajes.php            Mensajes de contacto (administrador)
 │   ├── educativo.php, about.php, contacto.php
 │   ├── api/                    Endpoints JSON (los llama el JavaScript)
 │   │   ├── auth/               login.php · registro.php · logout.php
-│   │   ├── simulaciones/       calcular.php · guardar.php · detalle.php · exportar.php
+│   │   ├── simulaciones/       calcular.php · guardar.php · detalle.php · exportar.php · eliminar.php
+│   │   ├── mensajes/           leido.php
 │   │   └── contacto.php
 │   └── assets/
 │       ├── css/style.css
@@ -27,14 +29,17 @@ solar-sim/
 │   ├── Database.php            Conexión PDO única
 │   ├── Auth.php                Sesión y control de acceso
 │   ├── Calculadora.php         Modelo de cálculo solar (fuente única de verdad)
-│   └── repositories/           Todo el SQL: Usuario, Simulacion, Estadisticas
+│   └── repositories/           Todo el SQL: Usuario, Simulacion, Estadisticas, Mensaje
 ├── templates/
 │   ├── layout/                 head.php · header.php (menú) · footer.php
 │   └── export/simulacion.php   Reporte descargable
 ├── config/
 │   ├── config.php              Valores por defecto (XAMPP)
 │   └── config.local.example.php
-├── database/paneles_solares.sql
+├── database/
+│   ├── paneles_solares.sql          Esquema completo + usuarios de prueba (local)
+│   ├── paneles_solares_hosting.sql  Igual, sin triggers ni CREATE DATABASE (hosting compartido)
+│   └── migraciones/                 Cambios para bases ya creadas
 ├── .htaccess                   Redirige todo a public/
 └── index.php                   Respaldo si no hay mod_rewrite
 ```
@@ -74,10 +79,13 @@ assets/js/<pagina>.js ──fetch JSON──► public/api/.../*.php
 1. Copiar la carpeta en `C:\xampp\htdocs\solar-sim`.
 2. En phpMyAdmin, importar `database/paneles_solares.sql`.
 3. Abrir <http://localhost/solar-sim/>.
-4. Si la base de datos no usa `root` sin contraseña, copiar `config/config.local.example.php` como
+4. ¿Ya tenías la base creada antes? Importa también los archivos de `database/migraciones/` en orden.
+5. Si la base de datos no usa `root` sin contraseña, copiar `config/config.local.example.php` como
    `config/config.local.php` y ajustar los datos (este archivo no se sube a git).
 
 Usuarios de prueba: `Emma / emma123` (admin), `Breiner / breiner123`, `Juan / juan123`.
 Sus contraseñas se guardan en texto plano en el `.sql`, pero se convierten a hash la primera vez que inician sesión.
+
+La sesión se cierra tras 30 minutos sin actividad (`app.sesion_minutos` en `config/config.php`).
 
 Requisitos: PHP 8.0+ con `pdo_mysql`, MySQL 5.7+ o MariaDB 10.4+, Apache con `mod_rewrite` (recomendado).

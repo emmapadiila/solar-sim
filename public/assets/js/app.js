@@ -10,7 +10,8 @@ const SolarSim = {
 
         const response = await fetch(url, opciones);
         if (response.status === 401 && !url.startsWith('api/auth/')) {
-            window.location.href = 'index.php';
+            // Al recargar, la página detecta que no hay sesión, recuerda dónde estaba y lleva al login
+            window.location.reload();
         }
         return response.json();
     },
@@ -22,16 +23,32 @@ const SolarSim = {
         return div.innerHTML;
     },
 
-    formatearNumero(numero) {
-        return Number(numero).toLocaleString('es-CO');
+    /** Colores de la marca para gráficos y alertas (iguales a los tokens de style.css). */
+    colores: {
+        navy: '#16294a',
+        navySuave: 'rgba(30, 58, 100, 0.75)',
+        sol: '#f59e0b',
+        verde: '#059669',
+        gris: '#64748b',
+        rejilla: '#e2e8f0'
     },
 
-    exito(mensaje, titulo = '¡Éxito!') {
-        return Swal.fire({ icon: 'success', title: titulo, text: mensaje, confirmButtonColor: '#4361ee' });
+    /** 203000 -> "$203.000" */
+    moneda(valor) {
+        return '$' + Math.round(Number(valor)).toLocaleString('es-CO');
     },
 
-    error(mensaje, titulo = 'Error') {
-        return Swal.fire({ icon: 'error', title: titulo, text: mensaje, confirmButtonColor: '#e74c3c' });
+    /** 395.56, 1 -> "395,6" */
+    numero(valor, decimales = 0) {
+        return Number(valor).toLocaleString('es-CO', { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
+    },
+
+    exito(mensaje, titulo = 'Listo') {
+        return Swal.fire({ icon: 'success', title: titulo, text: mensaje, confirmButtonColor: SolarSim.colores.navy });
+    },
+
+    error(mensaje, titulo = 'Algo salió mal') {
+        return Swal.fire({ icon: 'error', title: titulo, text: mensaje, confirmButtonColor: SolarSim.colores.navy });
     },
 
     cargando(titulo, texto = 'Por favor, espera') {
@@ -44,8 +61,8 @@ const SolarSim = {
             text: '¿Estás seguro de que quieres cerrar sesión?',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#4361ee',
-            cancelButtonColor: '#e74c3c',
+            confirmButtonColor: SolarSim.colores.navy,
+            cancelButtonColor: SolarSim.colores.gris,
             confirmButtonText: 'Sí, cerrar sesión',
             cancelButtonText: 'Cancelar'
         });
@@ -66,6 +83,18 @@ const SolarSim = {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Menú hamburguesa (pantallas medianas y móviles)
+    const navToggle = document.getElementById('navToggle');
+    const menu = document.getElementById('menuPrincipal');
+    if (navToggle && menu) {
+        navToggle.addEventListener('click', function() {
+            const abierto = menu.classList.toggle('abierto');
+            navToggle.setAttribute('aria-expanded', abierto);
+            navToggle.setAttribute('aria-label', abierto ? 'Cerrar menú' : 'Abrir menú');
+            navToggle.querySelector('i').className = abierto ? 'fas fa-times' : 'fas fa-bars';
+        });
+    }
+
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {

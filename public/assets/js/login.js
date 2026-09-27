@@ -2,6 +2,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
+    const loginMensaje = document.getElementById('loginMensaje');
+    const registroMensaje = document.getElementById('registroMensaje');
 
     async function postJson(url, body) {
         const response = await fetch(url, {
@@ -12,12 +14,26 @@ document.addEventListener('DOMContentLoaded', function() {
         return response.json();
     }
 
-    function mostrarFormulario(mostrar, ocultar) {
-        ocultar.classList.add('oculto');
-        mostrar.classList.remove('oculto');
+    function mostrarMensaje(elemento, texto, tipo = 'error') {
+        elemento.textContent = texto;
+        elemento.className = `form-message form-message--${tipo} is-visible`;
     }
 
-    // Alternar entre login y registro
+    function ocultarMensajes() {
+        [loginMensaje, registroMensaje].forEach(el => el.classList.remove('is-visible'));
+    }
+
+    function mostrarFormulario(mostrar, ocultar) {
+        ocultarMensajes();
+        ocultar.classList.add('oculto');
+        mostrar.classList.remove('oculto');
+        mostrar.querySelector('input').focus();
+    }
+
+    function bloquear(form, bloqueado) {
+        form.querySelector('button[type="submit"]').disabled = bloqueado;
+    }
+
     document.getElementById('showRegister').addEventListener('click', function(e) {
         e.preventDefault();
         mostrarFormulario(registerForm, loginForm);
@@ -28,26 +44,31 @@ document.addEventListener('DOMContentLoaded', function() {
         mostrarFormulario(loginForm, registerForm);
     });
 
-    // Manejar login
     loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const nombre = document.getElementById('loginNombre').value.trim();
         const password = document.getElementById('loginPassword').value;
 
+        if (!nombre || !password) {
+            mostrarMensaje(loginMensaje, 'Escribe tu usuario y tu contraseña.');
+            return;
+        }
+
+        bloquear(loginForm, true);
         try {
             const data = await postJson('api/auth/login.php', { nombre, password });
             if (data.success) {
-                window.location.href = 'dashboard.php';
-            } else {
-                alert(data.message || 'Error al iniciar sesión');
+                window.location.href = data.redirect || 'dashboard.php';
+                return;
             }
+            mostrarMensaje(loginMensaje, data.message || 'No se pudo iniciar sesión.');
         } catch (error) {
             console.error('Error:', error);
-            alert('Error al conectar con el servidor');
+            mostrarMensaje(loginMensaje, 'No se pudo conectar con el servidor. Intenta de nuevo.');
         }
+        bloquear(loginForm, false);
     });
 
-    // Manejar registro
     registerForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -59,33 +80,32 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         if (!formData.nombre || !formData.contrasena || !formData.direccion) {
-            alert('Por favor complete todos los campos');
+            mostrarMensaje(registroMensaje, 'Completa todos los campos.');
             return;
         }
-
-        if (formData.contrasena.length < 6) {
-            alert('La contraseña debe tener al menos 6 caracteres');
+        if (formData.contrasena.trim().length < 6) {
+            mostrarMensaje(registroMensaje, 'La contraseña debe tener al menos 6 caracteres.');
             return;
         }
-
         if (isNaN(formData.edad) || formData.edad < 1 || formData.edad > 120) {
-            alert('Por favor ingrese una edad válida');
+            mostrarMensaje(registroMensaje, 'Ingresa una edad válida.');
             return;
         }
 
+        bloquear(registerForm, true);
         try {
             const data = await postJson('api/auth/registro.php', formData);
-
             if (data.success) {
-                alert('Registro exitoso. Por favor inicia sesión.');
-                registerForm.reset();
-                mostrarFormulario(loginForm, registerForm);
+                // El servidor ya inició la sesión: entrar directamente
+                window.location.href = data.redirect || 'dashboard.php';
+                return;
             } else {
-                alert(data.message || 'Error al registrar');
+                mostrarMensaje(registroMensaje, data.message || 'No se pudo crear la cuenta.');
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Error al conectar con el servidor');
+            mostrarMensaje(registroMensaje, 'No se pudo conectar con el servidor. Intenta de nuevo.');
         }
+        bloquear(registerForm, false);
     });
 });

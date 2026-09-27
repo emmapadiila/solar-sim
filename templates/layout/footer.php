@@ -4,6 +4,13 @@
  * @var string[] $scripts  scripts propios de la página, relativos a assets/js/ (opcional)
  */
 ?>
+    <footer class="site-footer">
+        <div class="container">
+            <span>&copy; <?= date('Y') ?> <?= e(config('app.nombre')) ?> · Simulador de ahorro con energía solar</span>
+            <span>Las cifras son estimaciones de referencia.</span>
+        </div>
+    </footer>
+
     <script src="https://cdn.botpress.cloud/webchat/v3.0/inject.js"></script>
     <script src="https://files.bpcontent.cloud/2025/06/16/15/20250616155429-DTJTHRK0.js"></script>
     <script src="assets/js/app.js"></script>

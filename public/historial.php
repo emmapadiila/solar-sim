@@ -15,141 +15,93 @@ $total = count($simulaciones);
 $ahorroPromedio = $total ? array_sum(array_column($simulaciones, 'ahorro_mensual')) / $total : 0;
 $retornoPromedio = $total ? array_sum(array_column($simulaciones, 'retorno_inversion')) / $total : 0;
 
-render('layout/header', ['titulo' => 'Historial de Simulaciones', 'paginaActiva' => 'historial']);
+render('layout/header', ['titulo' => 'Historial', 'paginaActiva' => 'historial']);
 ?>
 
-    <main class="historial-content">
-        <div class="historial-container">
-            <div class="historial-header">
-                <h1><i class="fas fa-history"></i> Historial de Simulaciones</h1>
-                <p>Revisa todas tus simulaciones de paneles solares</p>
+    <main class="page">
+        <div class="container">
+            <div class="page-header">
+                <div>
+                    <p class="eyebrow"><i class="fas fa-clock-rotate-left"></i> Historial</p>
+                    <h1 class="page-title">Tus simulaciones</h1>
+                    <p class="page-subtitle">Consulta el detalle de cada simulación guardada o descárgala como reporte.</p>
+                </div>
+                <a href="calculadora.php" class="btn btn--primary"><i class="fas fa-plus"></i> Nueva simulación</a>
             </div>
 
             <?php if (isset($error)): ?>
-                <div class="error-message">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <?= e($error) ?>
+                <div class="alert alert--warning mb-5">
+                    <i class="fas fa-triangle-exclamation"></i>
+                    <span><?= e($error) ?></span>
                 </div>
             <?php endif; ?>
 
             <?php if (empty($simulaciones)): ?>
-                <div class="empty-state">
-                    <i class="fas fa-chart-line"></i>
-                    <h2>No tienes simulaciones aún</h2>
-                    <p>Realiza tu primera simulación para ver el historial aquí</p>
-                    <a href="calculadora.php" class="btn-primary">
-                        <i class="fas fa-calculator"></i> Ir a Calculadora
-                    </a>
+                <div class="card">
+                    <div class="empty-state">
+                        <span class="icon-badge"><i class="fas fa-chart-line"></i></span>
+                        <h2>Aún no tienes simulaciones</h2>
+                        <p>Cuando guardes una simulación desde la calculadora aparecerá aquí.</p>
+                        <a href="calculadora.php" class="btn btn--dark"><i class="fas fa-calculator"></i> Ir a la calculadora</a>
+                    </div>
                 </div>
             <?php else: ?>
-                <div class="historial-stats">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calculator"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Total Simulaciones</h3>
-                            <p><?= count($simulaciones) ?></p>
+                <div class="grid grid--3 mb-5">
+                    <div class="stat">
+                        <span class="icon-badge icon-badge--navy"><i class="fas fa-calculator"></i></span>
+                        <div class="stat__body">
+                            <p class="stat__label">Simulaciones</p>
+                            <p class="stat__value"><?= $total ?></p>
                         </div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-piggy-bank"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Ahorro Promedio</h3>
-                            <p>$<?= number_format($ahorroPromedio, 0, ',', '.') ?></p>
+                    <div class="stat">
+                        <span class="icon-badge icon-badge--green"><i class="fas fa-piggy-bank"></i></span>
+                        <div class="stat__body">
+                            <p class="stat__label">Ahorro mensual promedio</p>
+                            <p class="stat__value stat__value--success"><?= formato_moneda($ahorroPromedio) ?></p>
                         </div>
                     </div>
-                    
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-content">
-                            <h3>Retorno Promedio</h3>
-                            <p><?= number_format($retornoPromedio, 1, ',', '.') ?> años</p>
+                    <div class="stat">
+                        <span class="icon-badge"><i class="fas fa-hourglass-half"></i></span>
+                        <div class="stat__body">
+                            <p class="stat__label">Retorno promedio</p>
+                            <p class="stat__value"><?= formato_numero($retornoPromedio, 1) ?><span class="stat__unit">años</span></p>
                         </div>
                     </div>
                 </div>
 
-                <div class="simulaciones-grid">
+                <div class="grid grid--3">
                     <?php foreach ($simulaciones as $simulacion): ?>
-                        <div class="simulacion-card">
-                            <div class="simulacion-header">
-                                <div class="simulacion-fecha">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <?= date('d/m/Y H:i', strtotime($simulacion['fecha'])) ?>
+                        <article class="card sim-card">
+                            <div class="sim-card__header">
+                                <div>
+                                    <h2 class="sim-card__city"><?= e(Calculadora::nombreCiudad($simulacion['ubicacion'])) ?></h2>
+                                    <p class="sim-card__date"><?= date('d/m/Y · H:i', strtotime($simulacion['fecha'])) ?></p>
                                 </div>
-                                <div class="simulacion-ubicacion">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <?= e(Calculadora::nombreCiudad($simulacion['ubicacion'])) ?>
-                                </div>
+                                <span class="badge badge--sun">Estrato <?= e($simulacion['estrato']) ?></span>
                             </div>
-                            
-                            <div class="simulacion-details">
-                                <div class="detail-row">
-                                    <span class="detail-label">Estrato:</span>
-                                    <span class="detail-value"><?= e($simulacion['estrato']) ?></span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Consumo:</span>
-                                    <span class="detail-value"><?= e($simulacion['consumo_mensual']) ?> kWh/mes</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Área:</span>
-                                    <span class="detail-value"><?= e($simulacion['area_disponible']) ?> m²</span>
-                                </div>
-                                <div class="detail-row">
-                                    <span class="detail-label">Tipo Energía:</span>
-                                    <span class="detail-value"><?= e(ucfirst($simulacion['tipo_energia'])) ?></span>
-                                </div>
-                            </div>
-                            
-                            <div class="simulacion-results">
-                                <div class="result-item">
-                                    <i class="fas fa-solar-panel"></i>
-                                    <div>
-                                        <span class="result-label">Energía Generada</span>
-                                        <span class="result-value"><?= e($simulacion['energia_generada']) ?> kWh/mes</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="result-item">
-                                    <i class="fas fa-piggy-bank"></i>
-                                    <div>
-                                        <span class="result-label">Ahorro Mensual</span>
-                                        <span class="result-value">$<?= number_format((float)$simulacion['ahorro_mensual'], 0, ',', '.') ?></span>
-                                    </div>
-                                </div>
-                                
-                                <div class="result-item">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <div>
-                                        <span class="result-label">Ahorro Anual</span>
-                                        <span class="result-value">$<?= number_format((float)$simulacion['ahorro_anual'], 0, ',', '.') ?></span>
-                                    </div>
-                                </div>
-                                
-                                <div class="result-item">
-                                    <i class="fas fa-clock"></i>
-                                    <div>
-                                        <span class="result-label">Retorno Inversión</span>
-                                        <span class="result-value"><?= e($simulacion['retorno_inversion']) ?> años</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="simulacion-actions">
-                                <button class="btn-ver" onclick="verDetalle(<?= (int)$simulacion['id_simulacion'] ?>)">
-                                    <i class="fas fa-eye"></i> Ver Detalle
+
+                            <dl class="data-list">
+                                <div><dt>Ahorro mensual</dt><dd class="is-positive"><?= formato_moneda($simulacion['ahorro_mensual']) ?></dd></div>
+                                <div><dt>Ahorro anual</dt><dd class="is-positive"><?= formato_moneda($simulacion['ahorro_anual']) ?></dd></div>
+                                <div><dt>Consumo</dt><dd><?= formato_numero($simulacion['consumo_mensual']) ?> kWh</dd></div>
+                                <div><dt>Generación</dt><dd><?= formato_numero($simulacion['energia_generada'], 1) ?> kWh</dd></div>
+                                <div><dt>Área</dt><dd><?= formato_numero($simulacion['area_disponible']) ?> m²</dd></div>
+                                <div><dt>Retorno</dt><dd><?= formato_numero($simulacion['retorno_inversion'], 1) ?> años</dd></div>
+                            </dl>
+
+                            <div class="sim-card__actions">
+                                <button type="button" class="btn btn--secondary btn--sm" onclick="verDetalle(<?= (int)$simulacion['id_simulacion'] ?>)">
+                                    <i class="fas fa-eye"></i> Ver detalle
                                 </button>
-                                <button class="btn-exportar" onclick="exportarSimulacion(<?= (int)$simulacion['id_simulacion'] ?>)">
-                                    <i class="fas fa-download"></i> Exportar
+                                <button type="button" class="btn btn--ghost btn--sm" onclick="exportarSimulacion(<?= (int)$simulacion['id_simulacion'] ?>)">
+                                    <i class="fas fa-download"></i> Descargar
+                                </button>
+                                <button type="button" class="btn btn--danger btn--sm btn--icon" onclick="eliminarSimulacion(<?= (int)$simulacion['id_simulacion'] ?>)" aria-label="Eliminar simulación" title="Eliminar">
+                                    <i class="fas fa-trash-can"></i>
                                 </button>
                             </div>
-                        </div>
+                        </article>
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>

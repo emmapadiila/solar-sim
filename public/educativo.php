@@ -3,149 +3,96 @@ require __DIR__ . '/../src/bootstrap.php';
 
 Auth::requireLogin();
 
-render('layout/header', ['titulo' => 'Contenido Educativo', 'paginaActiva' => 'educativo']);
+$temas = [
+    [
+        'icono' => 'fa-sun',
+        'titulo' => '¿Qué es la energía solar?',
+        'texto' => 'Es una fuente de energía renovable que aprovecha la radiación del sol para generar electricidad o calor.',
+        'puntos' => ['Renovable e inagotable', 'No produce gases de efecto invernadero', 'Reduce la dependencia de combustibles fósiles', 'Gratuita una vez instalada', 'Requiere poco mantenimiento'],
+    ],
+    [
+        'icono' => 'fa-solar-panel',
+        'titulo' => '¿Cómo funcionan los paneles?',
+        'texto' => 'Los paneles fotovoltaicos convierten la luz solar directamente en electricidad mediante el efecto fotovoltaico.',
+        'puntos' => ['Las células capturan la luz solar', 'Los fotones excitan los electrones del silicio', 'Se genera corriente continua', 'Un inversor la convierte en corriente alterna', 'La energía se usa en casa o se vende a la red'],
+    ],
+    [
+        'icono' => 'fa-house',
+        'titulo' => 'Beneficios para tu hogar',
+        'texto' => 'Instalar paneles solares ofrece ventajas económicas, ambientales y sociales.',
+        'puntos' => ['Ahorro significativo en la factura', 'Mayor valor de la propiedad', 'Independencia energética', 'Protección ante aumentos de tarifas', 'Contribución a la sostenibilidad'],
+    ],
+    [
+        'icono' => 'fa-gauge-high',
+        'titulo' => 'Factores de eficiencia',
+        'texto' => 'Varios factores influyen en cuánta energía producen los paneles.',
+        'puntos' => ['Orientación e inclinación', 'Horas de sol directo en tu ciudad', 'Sombras y obstáculos', 'Calidad y tipo de panel', 'Mantenimiento y limpieza'],
+    ],
+    [
+        'icono' => 'fa-leaf',
+        'titulo' => 'Impacto ambiental',
+        'texto' => 'Es una de las formas más limpias de generar electricidad.',
+        'puntos' => ['Reduce las emisiones de CO2', 'No contamina el aire ni el agua', 'Conserva recursos naturales', 'Ayuda a combatir el cambio climático', 'Promueve la sostenibilidad'],
+    ],
+    [
+        'icono' => 'fa-coins',
+        'titulo' => 'Inversión y retorno',
+        'texto' => 'Los paneles solares son una inversión que se paga sola con el tiempo.',
+        'puntos' => ['Recuperación en 5 a 10 años', 'Vida útil de 25 a 30 años', 'Incentivos tributarios disponibles', 'Valorización de la propiedad', 'Protección contra la inflación energética'],
+    ],
+];
+
+render('layout/header', ['titulo' => 'Aprende', 'paginaActiva' => 'educativo']);
 ?>
 
-    <main class="educativo-content">
-        <div class="educativo-container">
-            <div class="educativo-header">
-                <h1><i class="fas fa-graduation-cap"></i>Contenido Educativo</h1>
-                <p>Descubre todo lo que necesitas saber sobre energía solar, paneles solares y cómo pueden transformar tu consumo energético. Aprende de manera interactiva y divertida.</p>
-            </div>
-
-            <div class="topics-grid">
-                <div class="topic-card">
-                    <div class="topic-icon">
-                        <i class="fas fa-sun"></i>
-                    </div>
-                    <h3>¿Qué es la Energía Solar?</h3>
-                    <p>La energía solar es una fuente de energía renovable que aprovecha la radiación electromagnética del sol para generar electricidad o calor.</p>
-                    <ul class="topic-features">
-                        <li>Es completamente renovable e inagotable</li>
-                        <li>No produce emisiones de gases de efecto invernadero</li>
-                        <li>Reduce la dependencia de combustibles fósiles</li>
-                        <li>Es gratuita una vez instalada</li>
-                        <li>Requiere poco mantenimiento</li>
-                    </ul>
-                </div>
-
-                <div class="topic-card">
-                    <div class="topic-icon">
-                        <i class="fas fa-solar-panel"></i>
-                    </div>
-                    <h3>¿Cómo Funcionan los Paneles Solares?</h3>
-                    <p>Los paneles solares fotovoltaicos convierten la luz solar directamente en electricidad mediante el efecto fotovoltaico.</p>
-                    <ul class="topic-features">
-                        <li>Las células fotovoltaicas capturan la luz solar</li>
-                        <li>Los fotones excitan los electrones del silicio</li>
-                        <li>Se genera una corriente eléctrica continua</li>
-                        <li>Un inversor convierte la corriente a alterna</li>
-                        <li>La electricidad se puede usar o vender a la red</li>
-                    </ul>
-                </div>
-
-                <div class="topic-card">
-                    <div class="topic-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <h3>Beneficios para tu Hogar</h3>
-                    <p>Instalar paneles solares en tu hogar ofrece múltiples ventajas económicas, ambientales y sociales.</p>
-                    <ul class="topic-features">
-                        <li>Ahorro significativo en la factura eléctrica</li>
-                        <li>Valor agregado a tu propiedad</li>
-                        <li>Independencia energética</li>
-                        <li>Protección contra aumentos de tarifas</li>
-                        <li>Contribución a la sostenibilidad</li>
-                    </ul>
-                </div>
-
-                <div class="topic-card">
-                    <div class="topic-icon">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3>Factores que Afectan la Eficiencia</h3>
-                    <p>Varios factores influyen en la eficiencia y producción de energía de los paneles solares.</p>
-                    <ul class="topic-features">
-                        <li>Orientación e inclinación de los paneles</li>
-                        <li>Horas de sol directo en tu ubicación</li>
-                        <li>Sombras y obstáculos</li>
-                        <li>Calidad y tipo de paneles</li>
-                        <li>Mantenimiento y limpieza</li>
-                    </ul>
-                </div>
-
-                <div class="topic-card">
-                    <div class="topic-icon">
-                        <i class="fas fa-leaf"></i>
-                    </div>
-                    <h3>Impacto Ambiental</h3>
-                    <p>La energía solar es una de las formas más limpias de generar electricidad y tiene un impacto positivo en el medio ambiente.</p>
-                    <ul class="topic-features">
-                        <li>Reduce las emisiones de CO2</li>
-                        <li>No contamina el aire ni el agua</li>
-                        <li>Conserva recursos naturales</li>
-                        <li>Combate el cambio climático</li>
-                        <li>Promueve la sostenibilidad</li>
-                    </ul>
-                </div>
-
-                <div class="topic-card">
-                    <div class="topic-icon">
-                        <i class="fas fa-coins"></i>
-                    </div>
-                    <h3>Inversión y Retorno</h3>
-                    <p>Los paneles solares son una inversión inteligente que se paga por sí misma con el tiempo.</p>
-                    <ul class="topic-features">
-                        <li>Período de recuperación de 5-10 años</li>
-                        <li>Vida útil de 25-30 años</li>
-                        <li>Incentivos y subsidios disponibles</li>
-                        <li>Valorización de la propiedad</li>
-                        <li>Protección contra inflación energética</li>
-                    </ul>
+    <main class="page">
+        <div class="container">
+            <div class="page-header">
+                <div>
+                    <p class="eyebrow"><i class="fas fa-graduation-cap"></i> Aprende</p>
+                    <h1 class="page-title">Energía solar, explicada</h1>
+                    <p class="page-subtitle">Lo esencial sobre energía solar, paneles y cómo pueden transformar tu consumo energético.</p>
                 </div>
             </div>
 
-            
-            <div class="resources-section">
-                <h2><i class="fas fa-book"></i> Recursos Adicionales</h2>
-                <div class="resources-grid">
-                    <div class="resource-card">
-                        <div class="resource-icon">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <h3>Videos Educativos</h3>
-                        <p>Explora nuestra colección de videos que explican de manera visual cómo funciona la energía solar.</p>
-                        <a href="https://youtu.be/jeT5lZ9t7c0?si=HxI_F_67k3E7sBct" class="btn-resource" target="_blank" rel="noopener">Ver Videos</a>
-                    </div>
-
-                    <div class="resource-card">
-                        <div class="resource-icon">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <h3>Guías Educativas</h3>
-                        <p>Guías completas sobre instalación, mantenimiento y optimización de paneles solares.</p>
-                        <a href="https://nalelectricos.com.co/paneles-solares-lo-que-debes-saber/" class="btn-resource" target="_blank" rel="noopener">Ver Guías</a>
-                    </div>
-
-                    <div class="resource-card">
-                        <div class="resource-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h3>Calculadoras Avanzadas</h3>
-                        <p>Utiliza nuestras herramientas avanzadas para calcular el potencial solar de tu ubicación.</p>
-                        <a href="calculadora.php" class="btn-resource">Calcular</a>
-                    </div>
-
-                    <div class="resource-card">
-                        <div class="resource-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <h3>Comunidad</h3>
-                        <p>Únete a nuestra comunidad de usuarios y comparte experiencias sobre energía solar.</p>
-                        <a href="#" class="btn-resource">Unirse</a>
-                    </div>
-                </div>
+            <div class="grid grid--3">
+                <?php foreach ($temas as $tema): ?>
+                    <article class="card topic-card reveal">
+                        <span class="icon-badge"><i class="fas <?= e($tema['icono']) ?>"></i></span>
+                        <h3><?= e($tema['titulo']) ?></h3>
+                        <p><?= e($tema['texto']) ?></p>
+                        <ul class="checklist">
+                            <?php foreach ($tema['puntos'] as $punto): ?>
+                                <li><?= e($punto) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </article>
+                <?php endforeach; ?>
             </div>
+
+            <section class="section">
+                <h2 class="section-title">Recursos adicionales</h2>
+                <div class="grid grid--3">
+                    <article class="card resource-card reveal">
+                        <span class="icon-badge icon-badge--navy"><i class="fas fa-circle-play"></i></span>
+                        <h3>Video explicativo</h3>
+                        <p class="card__text">Cómo funciona la energía solar, explicado de forma visual.</p>
+                        <a href="https://youtu.be/jeT5lZ9t7c0" class="btn btn--secondary btn--sm" target="_blank" rel="noopener">Ver video <i class="fas fa-arrow-up-right-from-square"></i></a>
+                    </article>
+                    <article class="card resource-card reveal">
+                        <span class="icon-badge icon-badge--navy"><i class="fas fa-book-open"></i></span>
+                        <h3>Guía sobre paneles solares</h3>
+                        <p class="card__text">Instalación, mantenimiento y lo que debes saber antes de invertir.</p>
+                        <a href="https://nalelectricos.com.co/paneles-solares-lo-que-debes-saber/" class="btn btn--secondary btn--sm" target="_blank" rel="noopener">Leer guía <i class="fas fa-arrow-up-right-from-square"></i></a>
+                    </article>
+                    <article class="card resource-card reveal">
+                        <span class="icon-badge icon-badge--navy"><i class="fas fa-calculator"></i></span>
+                        <h3>Calcula tu potencial solar</h3>
+                        <p class="card__text">Aplica lo aprendido y estima el ahorro de tu propia vivienda.</p>
+                        <a href="calculadora.php" class="btn btn--primary btn--sm">Ir a la calculadora <i class="fas fa-arrow-right"></i></a>
+                    </article>
+                </div>
+            </section>
         </div>
     </main>
 

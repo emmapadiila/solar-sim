@@ -96,15 +96,18 @@ final class Calculadora
         $energiaGenerada = $panelesAInstalar * $energiaPanelMes * self::FACTOR_PERDIDAS;
         $cobertura = min(100, ($energiaGenerada / $consumo) * 100);
 
+        $areaTexto = formato_numero($area, fmod($area, 1) ? 1 : 0);
+        $coberturaTexto = formato_numero($cobertura, 1);
+
         if ($panelesQueCaben >= $panelesNecesarios) {
             $mensaje = sprintf(
-                '¡Excelente! El área disponible (%s m²) es suficiente para instalar %d paneles y cubrir aproximadamente el %.1f%% de tu consumo.',
-                $area, $panelesAInstalar, $cobertura
+                'Tu techo de %s m² es suficiente para instalar %d paneles y cubrir aproximadamente el %s %% de tu consumo.',
+                $areaTexto, $panelesAInstalar, $coberturaTexto
             );
         } else {
             $mensaje = sprintf(
-                'Con el área disponible (%s m²) puedes instalar %d paneles, cubriendo aproximadamente el %.1f%% de tu consumo mensual. Necesitas %d paneles para cubrir el 100%%.',
-                $area, $panelesAInstalar, $cobertura, $panelesNecesarios
+                'En %s m² caben %d paneles, que cubren aproximadamente el %s %% de tu consumo. Para cubrir el 100 %% necesitarías %d paneles.',
+                $areaTexto, $panelesAInstalar, $coberturaTexto, $panelesNecesarios
             );
         }
 

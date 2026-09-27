@@ -71,3 +71,29 @@ function run_api(callable $handler): void
         json_response(['success' => false, 'message' => $mensaje], 500);
     }
 }
+
+/** Formato de moneda colombiana: 203000 -> "$203.000". */
+function formato_moneda($valor): string
+{
+    return '$' . number_format((float)$valor, 0, ',', '.');
+}
+
+/** Número con separadores colombianos: 395.56 -> "395,6" (con 1 decimal). */
+function formato_numero($valor, int $decimales = 0): string
+{
+    return number_format((float)$valor, $decimales, ',', '.');
+}
+
+/** Guarda un aviso para mostrarlo una sola vez en la siguiente página (tipo: info, warning, success). */
+function flash(string $mensaje, string $tipo = 'warning'): void
+{
+    $_SESSION['flash'] = ['mensaje' => $mensaje, 'tipo' => $tipo];
+}
+
+/** Devuelve el aviso pendiente y lo borra, o null si no hay. */
+function flash_pull(): ?array
+{
+    $aviso = $_SESSION['flash'] ?? null;
+    unset($_SESSION['flash']);
+    return $aviso;
+}

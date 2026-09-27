@@ -3,169 +3,77 @@
  * Reporte descargable de una simulación (HTML autocontenido, imprimible como PDF).
  * @var array $simulacion  fila de SimulacionRepository::buscarDeUsuario()
  */
+$fecha = date('d/m/Y H:i', strtotime($simulacion['fecha']));
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulación Solar - <?= (int)$simulacion['id_simulacion'] ?></title>
+    <title>Simulación solar #<?= (int)$simulacion['id_simulacion'] ?> · SolarSim</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #4361ee;
-        }
-        .header h1 {
-            color: #4361ee;
-            margin: 0;
-            font-size: 28px;
-        }
-        .header p {
-            color: #6c757d;
-            margin: 10px 0 0 0;
-        }
-        .section {
-            margin-bottom: 25px;
-        }
-        .section h2 {
-            color: #4361ee;
-            border-bottom: 1px solid #e9ecef;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        .item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #4361ee;
-        }
-        .item h3 {
-            margin: 0 0 5px 0;
-            color: #4361ee;
-            font-size: 14px;
-        }
-        .item p {
-            margin: 0;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2ecc71;
-        }
-        .results {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e9ecef;
-            color: #6c757d;
-            font-size: 12px;
-        }
-        @media print {
-            body { background: white; }
-            .container { box-shadow: none; }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Roboto, Arial, sans-serif; color: #0f172a; background: #f8fafc; padding: 32px 16px; line-height: 1.5; }
+        .reporte { max-width: 760px; margin: 0 auto; background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; }
+        .cabecera { background: #0f1d33; color: #fff; padding: 28px 32px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+        .marca { font-size: 20px; font-weight: 700; }
+        .marca span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #f59e0b; margin-right: 8px; }
+        .cabecera p { color: #cbd5e1; font-size: 14px; }
+        .contenido { padding: 32px; }
+        h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: #64748b; margin: 28px 0 12px; }
+        h2:first-child { margin-top: 0; }
+        .destacado { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 12px; padding: 20px 24px; }
+        .destacado .etiqueta { color: #047857; font-size: 14px; font-weight: 600; }
+        .destacado .valor { color: #047857; font-size: 34px; font-weight: 700; }
+        .destacado .nota { color: #475569; font-size: 14px; }
+        .datos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .dato { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px; }
+        .dato dt { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: .04em; }
+        .dato dd { font-weight: 600; }
+        .notas { color: #475569; font-size: 14px; padding-left: 18px; }
+        .notas li + li { margin-top: 4px; }
+        .pie { border-top: 1px solid #e2e8f0; padding: 16px 32px; color: #64748b; font-size: 12px; }
+        @media (max-width: 560px) { .datos { grid-template-columns: repeat(2, 1fr); } }
+        @media print { body { background: #fff; padding: 0; } .reporte { border: 0; } }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🌞 Simulación de Paneles Solares</h1>
-            <p>Reporte generado el <?= date('d/m/Y H:i', strtotime($simulacion['fecha'])) ?></p>
-        </div>
-
-        <div class="section">
-            <h2>📋 Información de la Simulación</h2>
-            <div class="grid">
-                <div class="item">
-                    <h3>Ubicación</h3>
-                    <p><?= e(Calculadora::nombreCiudad($simulacion['ubicacion'])) ?></p>
-                </div>
-                <div class="item">
-                    <h3>Estrato</h3>
-                    <p><?= e($simulacion['estrato']) ?></p>
-                </div>
-                <div class="item">
-                    <h3>Consumo Mensual</h3>
-                    <p><?= e($simulacion['consumo_mensual']) ?> kWh/mes</p>
-                </div>
-                <div class="item">
-                    <h3>Área Disponible</h3>
-                    <p><?= e($simulacion['area_disponible']) ?> m²</p>
-                </div>
-                <div class="item">
-                    <h3>Tipo de Energía</h3>
-                    <p><?= e(ucfirst($simulacion['tipo_energia'])) ?></p>
-                </div>
-                <div class="item">
-                    <h3>ID Simulación</h3>
-                    <p><?= (int)$simulacion['id_simulacion'] ?></p>
-                </div>
+    <div class="reporte">
+        <div class="cabecera">
+            <div>
+                <div class="marca"><span></span>SolarSim</div>
+                <p>Reporte de simulación de paneles solares</p>
             </div>
+            <p>Simulación #<?= (int)$simulacion['id_simulacion'] ?> · <?= $fecha ?></p>
         </div>
 
-        <div class="section">
-            <h2>📊 Resultados de la Simulación</h2>
-            <div class="results">
-                <div class="grid">
-                    <div class="item">
-                        <h3>⚡ Energía Generada</h3>
-                        <p><?= e($simulacion['energia_generada']) ?> kWh/mes</p>
-                    </div>
-                    <div class="item">
-                        <h3>💰 Ahorro Mensual</h3>
-                        <p>$<?= number_format((float)$simulacion['ahorro_mensual'], 0, ',', '.') ?></p>
-                    </div>
-                    <div class="item">
-                        <h3>📅 Ahorro Anual</h3>
-                        <p>$<?= number_format((float)$simulacion['ahorro_anual'], 0, ',', '.') ?></p>
-                    </div>
-                    <div class="item">
-                        <h3>⏰ Retorno de Inversión</h3>
-                        <p><?= e($simulacion['retorno_inversion']) ?> años</p>
-                    </div>
-                </div>
+        <div class="contenido">
+            <h2>Resultado</h2>
+            <div class="destacado">
+                <p class="etiqueta">Ahorro mensual estimado</p>
+                <p class="valor"><?= formato_moneda($simulacion['ahorro_mensual']) ?></p>
+                <p class="nota"><?= formato_moneda($simulacion['ahorro_anual']) ?> al año · retorno de la inversión en <?= formato_numero($simulacion['retorno_inversion'], 1) ?> años</p>
             </div>
-        </div>
 
-        <div class="section">
-            <h2>💡 Información Adicional</h2>
-            <ul>
-                <li><strong>Consumo promedio:</strong> 350 kWh/mes para una familia de 4 personas</li>
-                <li><strong>Área mínima:</strong> 20 m² para una instalación básica</li>
-                <li><strong>Retorno típico:</strong> 5-8 años dependiendo del consumo</li>
-                <li><strong>Ahorro estimado:</strong> 70-90% en la factura mensual</li>
+            <h2>Datos de la vivienda</h2>
+            <dl class="datos">
+                <div class="dato"><dt>Ciudad</dt><dd><?= e(Calculadora::nombreCiudad($simulacion['ubicacion'])) ?></dd></div>
+                <div class="dato"><dt>Estrato</dt><dd><?= e($simulacion['estrato']) ?></dd></div>
+                <div class="dato"><dt>Tipo de energía</dt><dd><?= e(ucfirst($simulacion['tipo_energia'])) ?></dd></div>
+                <div class="dato"><dt>Consumo mensual</dt><dd><?= formato_numero($simulacion['consumo_mensual']) ?> kWh</dd></div>
+                <div class="dato"><dt>Área disponible</dt><dd><?= formato_numero($simulacion['area_disponible']) ?> m²</dd></div>
+                <div class="dato"><dt>Energía generada</dt><dd><?= formato_numero($simulacion['energia_generada'], 1) ?> kWh/mes</dd></div>
+            </dl>
+
+            <h2>Referencias</h2>
+            <ul class="notas">
+                <li>Un hogar de 4 personas consume en promedio 350 kWh al mes.</li>
+                <li>Una instalación básica requiere al menos 20 m² de techo.</li>
+                <li>El retorno típico de la inversión es de 5 a 8 años.</li>
             </ul>
         </div>
 
-        <div class="footer">
-            <p>🌱 SolarSim - Transformando la energía del sol en tu ahorro</p>
-            <p>Este reporte fue generado automáticamente por el sistema SolarSim</p>
-        </div>
+        <div class="pie">Estimación de referencia generada por SolarSim. Los valores reales dependen del equipo instalado, la orientación del techo y las tarifas vigentes.</div>
     </div>
 </body>
 </html>
